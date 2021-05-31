@@ -1,0 +1,24 @@
+{
+    "wifi": {
+        "ssid": "USE_PREFERENCES",
+        "password": "USE_PREFERENCES"
+    },
+    "serial": {
+        "baudrate": 115200
+    },
+    "logger": {
+        "severity": 5
+    },
+    "sgp30": {
+        "iaqFrequency": 1,
+        "iaqRawFrequency": 10
+    },
+    "bmexxx": {
+        "dataFrequency": 10
+    },
+    "sdd": {
+        "serial_frequency": 0,
+        "display_frequency": 5,
+        "websocket_frequency": 1
+    }
+}

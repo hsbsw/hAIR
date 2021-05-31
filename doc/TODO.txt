@@ -1,0 +1,52 @@
+-------------
+
+Integrate Bosch BME sensor for at least temperature and humidity
+
+-------------
+
+Webpage
+
+- Multiple dashboards for different data/charts?
+   - 1 for Chart.js
+   - 1 for HighCharts?
+   or
+   - 1 for SGP
+   - 1 for BME?
+
+- Make sliders for data rate
+   - implies changing a lot of ESP code, since we have to broadcast different sensor data at different rates
+
+-------------
+
+Employ way more debug info on the ESP (like websocket onConnect)
+
+-------------
+
+External IoT service
+
+Data upload to ubiquity or some other service
+   --- via mqtt
+   --- via websocket?
+
+-------------
+
+Display
+
+- control brightness
+- multiple screens
+   - cycle with hardware button
+   - cycle with webpage button
+   - config for timed cycling
+   + Network Info
+   + POST (at startup)
+   + SGP Sensor
+   + BME Sensor
+   + Current config
+   + etc.
+
+-------------
+
+PlatformIO
+
+- make arduino-libraries/NTPClient @ ^3.1.0 work instead of adding it manually to "lib" directory
+- move clutter from main directory (like mklittlefs.exe, replace_fs.py, etc.)

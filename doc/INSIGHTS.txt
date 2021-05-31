@@ -1,0 +1,167 @@
+1. Lambdas do work
+
+auto myl = []() {
+    int cnt{};
+    while (true)
+    {
+        Serial.print("THREAD ");
+        Serial.println(cnt++);
+        delay(2000);
+    }
+};
+myl();
+
+2. enum class works
+
+3. threads work :)
+
+auto myl = []() {
+    int cnt{};
+    while (true)
+    {
+        Serial.print("THREAD ");
+        Serial.print(cnt++);
+        Serial.print(" ");
+        Serial.println(sds.getData().rawEthanol);
+        delay(200);
+    }
+};
+myth = std::thread(myl);
+
+4. vTaskList, uxTaskGetSystemState, etc. don't work. Even when compiling with -DconfigUSE_TRACE_FACILITY=1 :(
+
+5. mutex works
+https://stackoverflow.com/a/50602081
+
+struct SensorData : public std::mutex
+{
+    int a;
+    int b;
+};
+
+struct AutoLock
+{
+    AutoLock(std::mutex& mtx) : m_mtx(mtx) { m_mtx.lock(); }
+    ~AutoLock() { m_mtx.unlock(); }
+
+  private:
+    std::mutex& m_mtx;
+};
+
+int main()
+{
+    SensorData data;
+    data.lock();
+    data.a = 25;
+    data.unlock;
+
+    {
+        AutoLock tmp{data};
+
+        data.b = 35;
+    }
+}
+
+6. Structured bindings do not work
+
+int a = 1, b = 2;
+const auto& [x, y] = std::tie(a, b); // x and y are of type int&
+
+// --- auto [post_, config_] = loadConfigFromFile(CONFIG_FILE_NAME);
+// +++ std::tie(post.config, hAIR.config) = loadConfigFromFile(CONFIG_FILE_NAME);
+
+7. we can use "Preferences" for storing stuff like Wifi creds. Simple eeprom wrapper
+see https://randomnerdtutorials.com/esp32-save-data-permanently-preferences/
+
+8. Try this some day
+
+    auto threadSkeleton = [&](void threadFunction(Timestamp now)) -> void {
+        while (true)
+        {
+            delay(10);
+
+            // IDK, 100hz maybe?
+            delay(10);
+
+            const auto now{millis()};
+
+            threadFunction(now);
+        }
+    };
+    threadSkeleton(threadFunction_sensorDataAcquisition);
+
+    //components.thread_sensorDataAcquisition = std::thread{[&] { threadSkeleton(this->threadFunction_sensorDataAcquisition); }};
+
+9. get this running
+
+    using my_std_function = std::function<void(Timestamp)>;
+    using my_std_function2 = std::function<void(hAIR_System&)>;
+    using my_std_function3 = std::function<void()>;
+
+    struct ThreadParams
+    {
+        hAIR_System& instance;
+        my_std_function2 threadFunction;
+    };
+    /*std::array<ThreadParams, 2> kram{
+        &hAIR_System::threadFunction_sensorDataAcquisition,
+        &hAIR_System::threadFunction_sensorDataDistribution};*/
+
+    auto mylambda = [](void* param) {
+        auto p = (ThreadParams*)param;
+
+        my_std_function2 fp = p->threadFunction;
+        hAIR_System& ins = p->instance;
+        //ThreadParams& my_params = kram[p];
+
+        fp(ins);
+
+        /*using fp_t = void (hAIR_System::*)(Timestamp ts);
+        auto fp1 = (fp_t)param;
+        fp_t fp2 = reinterpret_cast<decltype(fp_t)>(param);
+        fp1(1561);
+        (this.*fp2)(1561);*/
+
+        //this->loop();
+        //auto test = (std::function<void(Timestamp)>)param;
+
+        //fp_t my_ptr = nullptr;
+        //reinterpret_cast<void*&>(my_ptr) = param;
+    };
+
+    auto mylambda2 = [](void* param) {
+        auto p = (ThreadParams*)param;
+
+        my_std_function2 fp = p->threadFunction;
+        hAIR_System& ins = p->instance;
+        //ThreadParams& my_params = kram[p];
+
+        fp(ins);
+
+        /*using fp_t = void (hAIR_System::*)(Timestamp ts);
+        auto fp1 = (fp_t)param;
+        fp_t fp2 = reinterpret_cast<decltype(fp_t)>(param);
+        fp1(1561);
+        (this.*fp2)(1561);*/
+
+        //this->loop();
+        //auto test = (std::function<void(Timestamp)>)param;
+
+        //fp_t my_ptr = nullptr;
+        //reinterpret_cast<void*&>(my_ptr) = param;
+    };
+
+    ThreadParams p_sda{*this, &hAIR_System::threadFunction_sensorDataAcquisition};
+    ThreadParams p_sdd{*this, &hAIR_System::threadFunction_sensorDataDistribution};
+
+    //xTaskCreatePinnedToCore(threadFunction_sensorDataAcquisition_helper, THREAD_SDA_NAME, THREAD_STACK_SIZE, this, THREAD_PRIORITY, &components.thread_sensorDataAcquisition, THREAD_SDA_CORE);
+    xTaskCreatePinnedToCore(mylambda, THREAD_SDA_NAME, THREAD_STACK_SIZE, &p_sda, THREAD_PRIORITY, &components.thread_sensorDataAcquisition, THREAD_SDA_CORE);
+
+    runtime.task_sdd_serial.setFrequency(config.sdd_serial_frequency);
+    runtime.task_sdd_display.setFrequency(config.sdd_display_frequency);
+    runtime.task_sdd_websocket.setFrequency(config.sdd_websocket_frequency);
+    //xTaskCreatePinnedToCore(threadFunction_sensorDataDistribution_helper, THREAD_SDD_NAME, THREAD_PRIORITY, this, THREAD_PRIORITY, &components.thread_sensorDataDistribution, THREAD_SDD_CORE);
+    xTaskCreatePinnedToCore(mylambda, THREAD_SDD_NAME, THREAD_PRIORITY, &p_sdd, THREAD_PRIORITY, &components.thread_sensorDataDistribution, THREAD_SDD_CORE);
+
+11. if with initializer does not work
+    if (fs::File file = LITTLEFS.open(filename); file)

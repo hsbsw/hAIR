@@ -1,0 +1,4 @@
+OTA:
+https://github.com/SensorsIot/ESP32-OTA/tree/master/0TA_Template_Sketch
+ElegantOTA WebServer: https://www.youtube.com/watch?v=LUcKoJGX38M
+

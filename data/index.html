@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+
+<!--
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// hAIR - HSB Air Station
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// MIT License
+///
+/// Copyright (c) 2021 hsbsw (https://github.com/hsbsw)
+///
+/// Permission is hereby granted, free of charge, to any person obtaining a copy
+/// of this software and associated documentation files (the "Software"), to deal
+/// in the Software without restriction, including without limitation the rights
+/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+/// copies of the Software, and to permit persons to whom the Software is
+/// furnished to do so, subject to the following conditions:
+///
+/// The above copyright notice and this permission notice shall be included in all
+/// copies or substantial portions of the Software.
+///
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+/// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+-->
+
+<html>
+
+<head>
+    <!-- Import Google Icon Font -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Some stuff?! -->
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+
+    <!-- Let browser know website is optimized for mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        #profile .lever {
+            float: right;
+        }
+    </style>
+
+    <!-- Set Title -->
+    <title>hAIR - HSB Air Station</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col s12">
+                <ul id="main_bar" class="tabs">
+                    <li class="tab col s6"><a href="#dashboard" class="active">Dashboard</a></li>
+                    <li class="tab col s6"><a href="#admin">Admin</a></li>
+                </ul>
+            </div>
+
+            <!-- Dashboard -->
+            <div id="dashboard" class="col s12">
+
+                <!-- SGP30 -->
+                <div class="section">
+
+                    <label style="font-size:18px">SGP30</label>
+
+                    <form action="#">
+                        <p class="range-field">
+                            <input type="range" id="range_sgp_frequency" value="60" min="0" max="600">Frequency [1/m] ...</input>
+                        </p>
+                    </form>
+
+                    <!-- TVOC -->
+                    <div class="row">
+                        <div id="highchart_sgp_tvoc" class="container"></div>
+                    </div>
+
+                    <!-- eCO2 -->
+                    <div class="row">
+                        <div id="highchart_sgp_eco2" class="container"></div>
+                    </div>
+
+                </div>
+                <div class="divider"></div>
+
+                <!-- BMExxx -->
+                <div class="section">
+
+                    <label style="font-size:18px">BMExxx</label>
+
+                    <form action="#">
+                        <p class="range-field">
+                            <input type="range" id="range_bme_frequency" value="60" min="0" max="600">Frequency [1/m] ...</input>
+                        </p>
+                    </form>
+
+                    <!-- Temperature -->
+                    <div class="row">
+                        <canvas id="chartjs_bme_temperature" width="800" height="450"></canvas>
+                    </div>
+
+                    <!-- Humidity -->
+                    <div class="row">
+                        <canvas id="chartjs_bme_humidity" width="800" height="450"></canvas>
+                    </div>
+
+                    <!-- Pressure -->
+                    <div class="row">
+                        <canvas id="chartjs_bme_pressure" width="800" height="450"></canvas>
+                    </div>
+
+                </div>
+                <div class="divider"></div>
+
+            </div>
+
+            <!-- Admin -->
+            <div id="admin" class="col s12">
+                <div class="col s12">
+
+                    <!-- Restart -->
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s4">
+                                <button id="button_restart" class="btn waves-effect waves-light">Restart hAIR
+                                    <i class="material-icons right">send</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+
+                    <!-- Config -->
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s12">
+                                <label style="font-size:18px">Config File</label>
+
+                                <div class="row">
+                                    <div class="col s12">
+                                        <form action="#">
+                                            <div class="file-field input-field">
+                                                <button class="btn waves-effect waves-light">Select
+                                                    <i class="material-icons right">send</i>
+                                                    <input id="fileinput_config_file" type="file" accept=".json"> <!-- TODO filetype filter -->
+                                                </button>
+                                                <div class="file-path-wrapper">
+                                                    <input class="file-path validate" type="text" placeholder="hAIR_config.json">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <button id="button_config_upload" class="btn waves-effect waves-light">Upload
+                                    <i class="material-icons right">send</i>
+                                </button>
+                                <button id="button_config_download" class="btn waves-effect waves-light">Download
+                                    <i class="material-icons right">send</i>
+                                </button>
+                                <button id="button_config_fresh" class="btn waves-effect waves-light">Generate Fresh
+                                    <i class="material-icons right">send</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+
+                    <!-- Logger Output -->
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s1">
+                                <label style="font-size:18px">Logger</label>
+                            </div>
+                            <div class="switch col s1">
+                                <label>Autoscroll
+                                    <input type="checkbox" id="slider_logMessages_autoscroll" checked>
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                            <div class="switch col s1">
+                                <label>Update
+                                    <input type="checkbox" id="slider_logMessages_update" checked>
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                            <div class="col s2">
+                                <button id="button_logMessages_clear" class="btn waves-effect waves-light">Clear
+                                    <i class="material-icons right">delete</i>
+                                </button>
+                            </div>
+                            <div class="col s2">
+                                <form action="#">
+                                    <p class="range-field">
+                                        <input type="range" id="range_logMessages_maxlines" value="100" min="0" max="100">Max Lines</input>
+                                    </p>
+                                </form>
+                            </div>
+                            <div class="col s5">
+                                <div class="input-field col s5">
+                                    <select id="select_logger_severity">
+                                        <option value="" disabled selected>Severity</option>
+                                        <option value="0">0 - None</option>
+                                        <option value="1">1 - Fatal</option>
+                                        <option value="2">2 - Error</option>
+                                        <option value="3">3 - Warning</option>
+                                        <option value="4">4 - Info</option>
+                                        <option value="5">5 - Debug</option>
+                                        <option value="6">6 - Verbose</option>
+                                    </select>
+                                    <label>Severity</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <textarea id="textarea_logMessages" style="height: 50vh;" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+
+                    <!-- Sensor Data -->
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s1">
+                                <label style="font-size:18px">SensorData</label>
+                            </div>
+                            <div class="switch col s1">
+                                <label>Autoscroll
+                                    <input type="checkbox" id="slider_sensorData_autoscroll" checked>
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                            <div class="switch col s1">
+                                <label>Update
+                                    <input type="checkbox" id="slider_sensorData_update" checked>
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                            <div class="col s2">
+                                <button id="button_sensorData_clear" class="btn waves-effect waves-light">Clear
+                                    <i class="material-icons right">delete</i>
+                                </button>
+                            </div>
+                            <div class="col s2">
+                                <form action="#">
+                                    <p class="range-field">
+                                        <input type="range" id="range_sensorData_maxlines" value="100" min="0" max="100">Max Lines</input>
+                                    </p>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <textarea id="textarea_sensorData" style="height: 50vh;" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s4">
+                                <label style="font-size:18px">Maybe some other Stuff</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.0/chart.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script type="text/javascript">
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// Setup
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        M.AutoInit();
+        let tabsBar = document.querySelector("#main_bar");
+        let instance = M.Tabs.init(tabsBar, {});
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// Dashboard Tab
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        highchart_sgp_tvoc = createHighchart("highchart_sgp_tvoc", "TVOC", "TVOC [ppb]")
+        highchart_sgp_eco2 = createHighchart("highchart_sgp_eco2", "eCO2", "eCO2 [ppm]")
+        chartjs_bme_temperature = createChartJs("chartjs_bme_temperature", "Temperature", "Temperature [°C]")
+        chartjs_bme_humidity = createChartJs("chartjs_bme_humidity", "Humidity", "Humidity [%]")
+        chartjs_bme_pressure = createChartJs("chartjs_bme_pressure", "Pressure", "Pressure [hPa]")
+
+        function createChartJs(target, title, ytext) {
+            return new Chart(target, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        label: title,
+                        borderColor: "#3e95cd",
+                        fill: false
+                    }]
+                }
+            });
+        }
+
+        function createHighchart(target, title, ytext) {
+            return new Highcharts.Chart({
+                chart: { renderTo: target },
+                title: { text: title },
+                series: [{
+                    showInLegend: false,
+                    data: []
+                }],
+                plotOptions: {
+                    line: {
+                        animation: false,
+                        dataLabels: { enabled: false }
+                    },
+                    series: { color: '#059e8a' }
+                },
+                xAxis: {
+                    type: 'datetime',
+                    dateTimeLabelFormats: { second: '%H:%M:%S' }
+                },
+                yAxis: {
+                    title: { text: ytext }
+                },
+                credits: { enabled: false }
+            });
+        }
+
+        function addSensorDataToSingleChartJs(chart, data) {
+            var t = new Date();
+            var x = t.getHours() + ":" + t.getMinutes() + ":" + t.getSeconds();
+            var y = parseFloat(data);
+
+            if (chart.data.labels.length > 40) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+
+            chart.data.labels.push(x);
+            chart.data.datasets[0].data.push(y);
+            chart.update();
+        }
+
+        function addSensorDataToSingleHighchart(chart, data) {
+            var x = (new Date()).getTime();
+            var y = parseFloat(data);
+            chart.series[0].addPoint([x, y], true, chart.series[0].data.length > 40, false);
+        }
+
+        function addSensorDataToCharts(json) {
+            json = JSON.parse(json);
+            json = json["hAIR"];
+
+            sgp = json["SGP30_IAQ"]
+            if (sgp) {
+                addSensorDataToSingleHighchart(highchart_sgp_tvoc, sgp["TVOC"])
+                addSensorDataToSingleHighchart(highchart_sgp_eco2, sgp["eCO2"])
+            }
+
+            bme = json["BMExxx_Data"]
+            if (bme) {
+                addSensorDataToSingleChartJs(chartjs_bme_temperature, bme["temperature"])
+                addSensorDataToSingleChartJs(chartjs_bme_humidity, bme["humidity"])
+                addSensorDataToSingleChartJs(chartjs_bme_pressure, bme["pressure"])
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// Admin Tab
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        ////////////////////////////////
+        /// Restart
+        ////////////////////////////////
+
+        let button_restart = document.querySelector("#button_restart");
+
+        async function restartHAIR() {
+            const response = await fetch('/restartHAIR', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            console.log("GET  /restartHAIR, received", response);
+            return response.ok;
+        }
+
+        button_restart.onclick = () => {
+            console.log("clicked button_restart");
+            restartHAIR();
+        };
+
+        ////////////////////////////////
+        /// Config
+        ////////////////////////////////
+
+        // Upload
+        let fileinput_config_file = document.querySelector("#fileinput_config_file");
+        let button_config_upload = document.querySelector("#button_config_upload");
+
+        async function uploadConfig(formData) {
+            const response = await fetch('/uploadConfig', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            });
+            console.log("POST /uploadConfig, received", response);
+            return response.ok;
+        }
+
+        button_config_upload.onclick = () => {
+            console.log("clicked button_config_upload");
+
+            let file = fileinput_config_file.files[0];
+            let formData = new FormData();
+            formData.append("file", file);
+
+            uploadConfig(formData);
+        };
+
+        // Download
+        let button_config_download = document.querySelector("#button_config_download");
+
+        async function downloadConfig() {
+            const response = await fetch('/downloadConfig', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            const json = await response.json();
+            console.log("GET  /downloadConfig, received", response);
+
+            var jsonString = JSON.stringify(json)
+            var jsonPretty = JSON.stringify(JSON.parse(jsonString), null, 4);
+
+            var hiddenElement = document.createElement('a');
+            hiddenElement.href = 'data:attachment/text,' + encodeURI(jsonPretty);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = 'hAIR_config.json';
+            hiddenElement.click();
+
+            return response.ok;
+        }
+
+        button_config_download.onclick = () => {
+            console.log("clicked button_config_download");
+            downloadConfig();
+        };
+
+        // Fresh
+        let button_config_fresh = document.querySelector("#button_config_fresh");
+
+        async function createFreshConfig() {
+            // https://www.codegrepper.com/code-examples/javascript/javascript+create+text+file+and+download
+            var freshConfigFile =
+                String.raw`{
+    "wifi": {
+        "ssid": "USE_PREFERENCES",
+        "password": "USE_PREFERENCES"
+    },
+    "serial": {
+        "baudrate": 115200
+    },
+    "logger": {
+        "severity": 5
+    },
+    "sgp30": {
+        "iaqFrequency": 1,
+        "iaqRawFrequency": 10
+    },
+    "bmexxx": {
+        "dataFrequency": 10
+    },
+    "sdd": {
+        "serial_frequency": 0,
+        "display_frequency": 5,
+        "websocket_frequency": 1
+    }
+}`;
+
+            var hiddenElement = document.createElement('a');
+
+            hiddenElement.href = 'data:attachment/text,' + encodeURI(freshConfigFile);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = 'hAIR_config.json';
+            hiddenElement.click();
+
+            return true;
+        }
+
+        button_config_fresh.onclick = () => {
+            console.log("clicked button_config_fresh");
+            createFreshConfig();
+        };
+
+        ////////////////////////////////
+        /// Logger
+        ////////////////////////////////
+
+        let slider_logMessages_autoscroll = document.querySelector("#slider_logMessages_autoscroll");
+        let slider_logMessages_update = document.querySelector("#slider_logMessages_update");
+        let button_logMessages_clear = document.querySelector("#button_logMessages_clear");
+        let range_logMessages_maxlines = document.querySelector("#range_logMessages_maxlines");
+        let select_logger_severity = document.querySelector("#select_logger_severity");
+        let textarea_logMessages = document.querySelector("#textarea_logMessages");
+
+        var textarea_logMessages_lines = [];
+        button_logMessages_clear.onclick = () => {
+            textarea_logMessages_lines = [];
+            textarea_logMessages.value = "";
+        }
+
+        async function getLoggerSeverity() {
+            const response = await fetch('/getLoggerSeverity', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            const json = await response.json();
+            console.log("GET  /getLoggerSeverity, received", response);
+
+            let sev = 0;
+            try {
+                sev = parseInt(json["severity"]);
+            } catch { }
+
+            return sev;
+        }
+
+        // Get the logger severety upon page load
+        setTimeout(getLoggerSeverityUponLoad, 3000);
+        function getLoggerSeverityUponLoad() {
+            try {
+                // TODO doesn't refresh / update
+                select_logger_severity.selectedIndex = getLoggerSeverity() + 1;
+                select_logger_severity.form.submit();
+                select_logger_severity.submit();
+            } catch { }
+        }
+
+        async function setLoggerSeverity(severity) {
+            const response = await fetch('/setLoggerSeverity', {
+                method: 'POST',
+                body: JSON.stringify({ severity: severity }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            });
+            console.log("GET /setLoggerSeverity, received", response);
+            return response.ok;
+        }
+
+        select_logger_severity.onchange = () => {
+            console.log("clicked select_logger_severity");
+            setLoggerSeverity(select_logger_severity.value);
+        };
+
+        function websocketLogMessages_init() {
+            textarea_logMessages.value = "";
+            websock = new WebSocket('ws://' + window.location.hostname + ':82/');
+            websock.onmessage = function (evt) {
+                // We want to print the raw json string
+                addLineToTextArea(
+                    evt.data + '\n',
+                    textarea_logMessages_lines,
+                    slider_logMessages_update,
+                    range_logMessages_maxlines,
+                    slider_logMessages_autoscroll,
+                    textarea_logMessages);
+            }
+        }
+        websocketLogMessages_init()
+
+        ////////////////////////////////
+        /// Sensor Data
+        ////////////////////////////////
+
+        let slider_sensorData_autoscroll = document.querySelector("#slider_sensorData_autoscroll");
+        let slider_sensorData_update = document.querySelector("#slider_sensorData_update");
+        let button_sensorData_clear = document.querySelector("#button_sensorData_clear");
+        let range_sensorData_maxlines = document.querySelector("#range_sensorData_maxlines");
+        let textarea_sensorData = document.querySelector("#textarea_sensorData");
+
+        var textarea_sensorData_lines = [];
+        button_sensorData_clear.onclick = () => {
+            textarea_sensorData_lines = [];
+            textarea_sensorData.value = "";
+        }
+
+        function websocketSensorData_init() {
+            textarea_sensorData.value = "";
+            websock = new WebSocket('ws://' + window.location.hostname + ':81/');
+            websock.onmessage = function (evt) {
+                // We want to print the raw json string
+                addLineToTextArea(
+                    evt.data + '\n',
+                    textarea_sensorData_lines,
+                    slider_sensorData_update,
+                    range_sensorData_maxlines,
+                    slider_sensorData_autoscroll,
+                    textarea_sensorData);
+
+                // add to charts
+                addSensorDataToCharts(evt.data);
+            }
+        }
+        websocketSensorData_init()
+
+        ////////////////////////////////
+        /// Mixed / Auxilary / Helper
+        ////////////////////////////////
+
+        let textarea_logMessages_lastSize = 0;
+        let textarea_sensorData_lastSize = 0;
+        setInterval(autoscrollTimerFunction, 1000);
+        function autoscrollTimerFunction() {
+            if (slider_logMessages_autoscroll.checked && textarea_logMessages.value.length != textarea_logMessages_lastSize) {
+                textarea_logMessages.scrollTop = textarea_logMessages.scrollHeight;
+                textarea_logMessages_lastSize = textarea_logMessages.value.length;
+            }
+            if (slider_sensorData_autoscroll.checked && textarea_sensorData.value.length != textarea_sensorData_lastSize) {
+                textarea_sensorData.scrollTop = textarea_sensorData.scrollHeight;
+                textarea_sensorData_lastSize = textarea_sensorData.value.length;
+            }
+        }
+
+        function addLineToTextArea(line, lines, update, range, autoscroll, textarea) {
+            if (update.checked) {
+                lines.push(line);
+
+                while (lines.length > range.value) {
+                    lines.shift();
+                }
+
+                textarea.value = lines.join('');
+
+                if (autoscroll.checked) {
+                    textarea.scrollTop = textarea.scrollHeight;
+                }
+            }
+        }
+
+        ////////////////////////////////
+        /// Test
+        ////////////////////////////////
+
+        var cnt = 0;
+        //setInterval(test, 100);
+        function test() {
+            cnt = cnt + 1;
+
+            /*addLineToTextArea(
+                "sensor data " + cnt + "\n",
+                textarea_sensorData_lines,
+                slider_sensorData_update,
+                range_sensorData_maxlines,
+                slider_sensorData_autoscroll,
+                textarea_sensorData);
+            addLineToTextArea(
+                "log message " + cnt + "\n",
+                textarea_logMessages_lines,
+                slider_logMessages_update,
+                range_logMessages_maxlines,
+                slider_logMessages_autoscroll,
+                textarea_logMessages);*/
+        }
+
+    </script>
+</body>
+
+</html>
