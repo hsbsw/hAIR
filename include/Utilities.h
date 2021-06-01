@@ -117,3 +117,6 @@ class TaskItem
 };
 
 void listDir(fs::FS& fs, const char* dirname, uint8_t levels);
+
+String getFormattedTime(unsigned long secs);
+String getFormattedDate(unsigned long secs);

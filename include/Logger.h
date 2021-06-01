@@ -27,6 +27,7 @@
 #pragma once
 
 #include "Display.h"
+#include "Utilities.h"
 #include <NTPClient.h>
 #include <WebSocketsServer.h>
 #include <iomanip>
@@ -49,7 +50,7 @@ class hAIR_Formatter
 
     plog::util::nstring format(const plog::Record& record)
     {
-        const auto dateTime{ntpclient.getFormattedDate()};
+        const auto dateTime{getFormattedDate(ntpclient.getEpochTime())};
         const auto now{millis()};
         const auto severity{severityToString(record.getSeverity())};
         const auto threadID{record.getTid()};

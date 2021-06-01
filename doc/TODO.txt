@@ -48,5 +48,4 @@ Display
 
 PlatformIO
 
-- make arduino-libraries/NTPClient @ ^3.1.0 work instead of adding it manually to "lib" directory
 - move clutter from main directory (like mklittlefs.exe, replace_fs.py, etc.)

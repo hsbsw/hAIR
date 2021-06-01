@@ -112,7 +112,7 @@ void hAIR_System::setup()
     // NTP
     printAndDisplayPOSTcomponent("NTP");
     post.ntpclient = post.wifi ? initNTP() : false;
-    printAndDisplayPOSTresult(post.ntpclient ? components.ntpclient.getFormattedDate() : "----", !post.ntpclient);
+    printAndDisplayPOSTresult(post.ntpclient ? getFormattedDate(components.ntpclient.getEpochTime()) : "----", !post.ntpclient);
 
     // WebServer
     post.asyncWebserver = initAsyncWebserver();
