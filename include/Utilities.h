@@ -30,13 +30,13 @@
 #include <Fs.h>
 #include <mutex>
 
-template <typename T>
+template<typename T>
 inline bool isBetween(T val, T min, T max)
 {
     return (min < val) && (val < max);
 }
 
-template <typename T>
+template<typename T>
 inline bool isWithin(T val, T min, T max)
 {
     return (min <= val) && (val <= max);
@@ -44,11 +44,18 @@ inline bool isWithin(T val, T min, T max)
 
 class AutoLock
 {
-  public:
-    AutoLock(std::mutex& mtx) : m_mtx(mtx) { m_mtx.lock(); }
-    ~AutoLock() { m_mtx.unlock(); }
+public:
+    AutoLock(std::mutex& mtx)
+        : m_mtx(mtx)
+    {
+        m_mtx.lock();
+    }
+    ~AutoLock()
+    {
+        m_mtx.unlock();
+    }
 
-  private:
+private:
     std::mutex& m_mtx;
 };
 
@@ -61,7 +68,7 @@ inline bool dt_max(Timestamp now, Timestamp last, Timestamp max)
 
 class TaskItem
 {
-  public:
+public:
     inline bool shallRun(Timestamp now = millis())
     {
         if (m_frequency == 0 || m_delayTime == 0)
@@ -109,11 +116,11 @@ class TaskItem
         m_delayTime = delayTime;
     }
 
-  private:
+private:
     int32_t m_ts_lastTry{};
     int32_t m_ts_lastSuccess{};
     int32_t m_delayTime{};
-    float m_frequency{};
+    float   m_frequency{};
 };
 
 void listDir(fs::FS& fs, const char* dirname, uint8_t levels);

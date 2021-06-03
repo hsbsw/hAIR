@@ -37,7 +37,7 @@
 
 class hAIR_Formatter
 {
-  public:
+public:
     hAIR_Formatter(NTPClient& ntpclient)
         : ntpclient(ntpclient)
     {
@@ -81,14 +81,14 @@ class hAIR_Formatter
         return ss.str();
     }
 
-  private:
+private:
     NTPClient& ntpclient;
 };
 
 // All appenders MUST inherit IAppender interface.
 class hAIR_Appender : public plog::IAppender
 {
-  public:
+public:
     hAIR_Appender(hAIR_Formatter& formatter, Display& display, WebSocketsServer& websocket)
         : formatter(formatter), display(display), websocket(websocket)
     {
@@ -122,8 +122,8 @@ class hAIR_Appender : public plog::IAppender
         websocket.broadcastTXT(jsonStr.c_str(), jsonStr.size());
     }
 
-  private:
-    hAIR_Formatter& formatter;
-    Display& display;
+private:
+    hAIR_Formatter&   formatter;
+    Display&          display;
     WebSocketsServer& websocket;
 };

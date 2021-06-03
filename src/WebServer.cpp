@@ -39,46 +39,62 @@ bool WebServer::init()
     ////////////////////////////////
 
     asyncWebserver.on("/", [&](AsyncWebServerRequest* request)
-                      { onRoot(request); });
+                      {
+                          onRoot(request);
+                      });
     asyncWebserver.onNotFound([&](AsyncWebServerRequest* request)
-                              { onPageNotFound(request); });
+                              {
+                                  onPageNotFound(request);
+                              });
 
     ////////////////////////////////
     /// Misc
     ////////////////////////////////
 
     asyncWebserver.on("/restartHAIR", [&](AsyncWebServerRequest* request)
-                      { onRestartHAIR(request); });
+                      {
+                          onRestartHAIR(request);
+                      });
     asyncWebserver.on("/sensordata", [&](AsyncWebServerRequest* request)
-                      { onSensordata(request); });
+                      {
+                          onSensordata(request);
+                      });
 
     ////////////////////////////////
     /// Logger
     ////////////////////////////////
 
     asyncWebserver.on("/getLoggerSeverity", [&](AsyncWebServerRequest* request)
-                      { onGetLoggerSeverity(request); });
+                      {
+                          onGetLoggerSeverity(request);
+                      });
     asyncWebserver.on(
         "/setLoggerSeverity",
         HTTP_POST,
         [](AsyncWebServerRequest* request) {},
         nullptr,
         [&](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total)
-        { onSetLoggerSeverity(request, data, len, index, total); });
+        {
+            onSetLoggerSeverity(request, data, len, index, total);
+        });
 
     ////////////////////////////////
     /// Config
     ////////////////////////////////
 
     asyncWebserver.on("/downloadConfig", [&](AsyncWebServerRequest* request)
-                      { onDownloadConfig(request); });
+                      {
+                          onDownloadConfig(request);
+                      });
     asyncWebserver.on(
         "/uploadConfig",
         HTTP_POST,
         [](AsyncWebServerRequest* request) {},
         nullptr,
         [&](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total)
-        { onUploadConfig(request, data, len, index, total); });
+        {
+            onUploadConfig(request, data, len, index, total);
+        });
 
     return true;
 }
@@ -154,11 +170,11 @@ void WebServer::onSetLoggerSeverity(AsyncWebServerRequest* request, uint8_t* dat
 
     // data is not \0 terminated, I have no other idea how to handle this apart from using malloc
     char* data = static_cast<char*>(malloc(len + 1));
-    data[len] = 0;
+    data[len]  = 0;
     memcpy(data, data_, len);
 
     StaticJsonDocument<128> doc;
-    DeserializationError err = deserializeJson(doc, data);
+    DeserializationError    err = deserializeJson(doc, data);
     if (err == DeserializationError::Ok)
     {
         const auto severity_ = doc["severity"].as<int>();
@@ -193,7 +209,7 @@ void WebServer::onUploadConfig(AsyncWebServerRequest* request, uint8_t* data_, s
 
     // data is not \0 terminated, I have no other idea how to handle this apart from using malloc
     char* data = static_cast<char*>(malloc(len + 1));
-    data[len] = 0;
+    data[len]  = 0;
     memcpy(data, data_, len);
 
     // TODO(hsbsw) we get the FormData() here, so until I know of a better method I have to manually parse the body

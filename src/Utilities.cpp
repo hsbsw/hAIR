@@ -53,7 +53,7 @@ void listDir(fs::FS& fs, const char* dirname, uint8_t levels)
             Serial.println(file.name());
 #else
             Serial.print(file.name());
-            time_t t = file.getLastWrite();
+            time_t     t        = file.getLastWrite();
             struct tm* tmstruct = localtime(&t);
             Serial.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
 #endif
@@ -73,7 +73,7 @@ void listDir(fs::FS& fs, const char* dirname, uint8_t levels)
             Serial.println(file.size());
 #else
             Serial.print(file.size());
-            time_t t = file.getLastWrite();
+            time_t     t        = file.getLastWrite();
             struct tm* tmstruct = localtime(&t);
             Serial.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
 #endif
@@ -89,15 +89,15 @@ void listDir(fs::FS& fs, const char* dirname, uint8_t levels)
 // https://github.com/arduino-libraries/NTPClient/pull/94
 String getFormattedTime(unsigned long secs)
 {
-    unsigned long rawTime = secs;
-    unsigned long hours = (rawTime % 86400L) / 3600;
-    String hoursStr = hours < 10 ? "0" + String(hours) : String(hours);
+    unsigned long rawTime  = secs;
+    unsigned long hours    = (rawTime % 86400L) / 3600;
+    String        hoursStr = hours < 10 ? "0" + String(hours) : String(hours);
 
-    unsigned long minutes = (rawTime % 3600) / 60;
-    String minuteStr = minutes < 10 ? "0" + String(minutes) : String(minutes);
+    unsigned long minutes   = (rawTime % 3600) / 60;
+    String        minuteStr = minutes < 10 ? "0" + String(minutes) : String(minutes);
 
-    unsigned long seconds = rawTime % 60;
-    String secondStr = seconds < 10 ? "0" + String(seconds) : String(seconds);
+    unsigned long seconds   = rawTime % 60;
+    String        secondStr = seconds < 10 ? "0" + String(seconds) : String(seconds);
 
     return hoursStr + ":" + minuteStr + ":" + secondStr;
 }
@@ -107,9 +107,9 @@ String getFormattedTime(unsigned long secs)
 // currently assumes UTC timezone, instead of using this->_timeOffset
 String getFormattedDate(unsigned long secs)
 {
-    unsigned long rawTime = secs / 86400L; // in days
-    unsigned long days = 0, year = 1970;
-    uint8_t month;
+    unsigned long        rawTime = secs / 86400L; // in days
+    unsigned long        days = 0, year = 1970;
+    uint8_t              month;
     static const uint8_t monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     while ((days += (LEAP_YEAR(year) ? 366 : 365)) <= rawTime)
@@ -131,7 +131,7 @@ String getFormattedDate(unsigned long secs)
             break;
         rawTime -= monthLength;
     }
-    String monthStr = ++month < 10 ? "0" + String(month) : String(month);     // jan is month 1
-    String dayStr = ++rawTime < 10 ? "0" + String(rawTime) : String(rawTime); // day of month
+    String monthStr = ++month < 10 ? "0" + String(month) : String(month);       // jan is month 1
+    String dayStr   = ++rawTime < 10 ? "0" + String(rawTime) : String(rawTime); // day of month
     return String(year) + "-" + monthStr + "-" + dayStr + "T" + getFormattedTime(secs ? secs : 0) + "Z";
 }

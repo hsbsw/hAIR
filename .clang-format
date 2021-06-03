@@ -3,15 +3,137 @@
 BasedOnStyle: LLVM
 IndentWidth: 4
 ---
-Language: Cpp
+# Order (mostly) as in https://releases.llvm.org/11.0.0/tools/clang/docs/ClangFormatStyleOptions.html
 UseTab: Never
 TabWidth: 4
-DerivePointerAlignment: false
-PointerAlignment: Left
+Language: Cpp
+Standard: Auto # Latest
+UseCRLF: true
+DisableFormat: false
+AccessModifierOffset: -4
+AlignAfterOpenBracket: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveBitFields: true
+AlignConsecutiveDeclarations: true
+AlignConsecutiveMacros: true
+AlignEscapedNewlines: Left
+AlignOperands: Align # AlignAfterOperator
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: Never # Empty, Always
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Empty # None, Empty, Inline, All
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: true
+BinPackParameters: true
+BraceWrapping:
+  AfterCaseLabel:  true
+  AfterClass:      true
+  AfterControlStatement: Always
+  AfterEnum:       true
+  AfterFunction:   true
+  AfterNamespace:  true
+  AfterStruct:     true
+  AfterUnion:      true
+  AfterExternBlock: true
+  BeforeCatch:     true
+  BeforeElse:      true
+  BeforeLambdaBody: false
+  BeforeWhile:     true
+  IndentBraces:    false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Allman
-AllowShortIfStatementsOnASingleLine: false
-IndentCaseLabels: false
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+BreakStringLiterals: false
 ColumnLimit: 0
-AccessModifierOffset: -2
-NamespaceIndentation: None
+CompactNamespaces: true
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 4
+Cpp11BracedListStyle: true
+DeriveLineEnding: true
+DerivePointerAlignment: false
 FixNamespaceComments: true
+IncludeBlocks: Merge
+IndentCaseBlocks: false
+IndentCaseLabels: false
+IndentExternBlock: NoIndent
+IndentPPDirectives: None
+IndentWrappedFunctionNames: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: None
+PenaltyBreakAssignment: 2
+PenaltyBreakBeforeFirstCallParameter: 19
+PenaltyBreakComment: 300
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakString: 1000
+PenaltyBreakTemplateDeclaration: 10
+PenaltyExcessCharacter: 1000000
+PenaltyReturnTypeOnItsOwnLine: 60
+PointerAlignment: Left
+ReflowComments: false
+SortIncludes: true
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInConditionalStatement: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# Not currently used
+#AlwaysBreakAfterDefinitionReturnType: deprecated...
+#CommentPragmas:
+#ContinuationIndentWidth: 4
+#ExperimentalAutoDetectBinPacking: ...
+#ForEachMacros:
+#IncludeCategories:
+#IncludeIsMainRegex:
+#IncludeIsMainSourceRegex:
+#IndentGotoLabels: false
+#MacroBlockBegin:
+#MacroBlockEnd:
+#NamespaceMacros:
+#RawStringFormats:
+#StatementMacros:
+#TypenameMacros:
+#WhitespaceSensitiveMacros:
+#InsertTrailingCommas:
+
+# Other languages
+#JavaImportGroups:
+#JavaScriptQuotes:
+#JavaScriptWrapImports:
+#ObjCBinPackProtocolList:
+#ObjCBlockIndentWidth:
+#ObjCBreakBeforeNestedBlockParam:
+#ObjCSpaceAfterProperty:
+#ObjCSpaceBeforeProtocolList:
+#BraceWrapping:
+  #AfterObjCDeclaration: true

@@ -34,19 +34,28 @@ struct SensorData;
 
 class Display
 {
-  public:
-    Display(TFT_eSPI& tft) : tft(tft) {}
+public:
+    Display(TFT_eSPI& tft)
+        : tft(tft)
+    {
+    }
 
     void printDebugMessage(const String& text);
     void printErrorMessage(const String& text);
     void printSensorData(const SensorData& sensorData);
 
-    inline void setDefaultColor() { tft.setTextColor(TFT_WHITE, TFT_BLACK); }
+    inline void setDefaultColor()
+    {
+        tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    }
 
-    inline void setRedColor() { tft.setTextColor(TFT_RED, TFT_BLACK); }
+    inline void setRedColor()
+    {
+        tft.setTextColor(TFT_RED, TFT_BLACK);
+    }
 
-  private:
-    TFT_eSPI& tft;
+private:
+    TFT_eSPI&  tft;
     std::mutex m_mtx;
 
     /// Employ some caching

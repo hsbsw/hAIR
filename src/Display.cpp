@@ -28,9 +28,9 @@
 #include "Utilities.h"
 #include "hAIR.h"
 
-#define XMIN (10)
-#define YMIN (20)
-#define LINE_INC (30)
+#define XMIN       (10)
+#define YMIN       (20)
+#define LINE_INC   (30)
 #define COLUMN_INC (30)
 
 void Display::setCursor(int x, int y)

@@ -217,8 +217,8 @@ void hAIR_System::threadFunction_sensorDataAcquisition(Timestamp now)
         auto getAbsoluteHumidity = [](float temperature, float humidity) -> uint32_t
         {
             // approximation formula from Sensirion SGP30 Driver Integration chapter 3.15
-            const float absoluteHumidity = 216.7f * ((humidity / 100.0f) * 6.112f * exp((17.62f * temperature) / (243.12f + temperature)) / (273.15f + temperature)); // [g/m^3]
-            const uint32_t absoluteHumidityScaled = static_cast<uint32_t>(1000.0f * absoluteHumidity);                                                                // [mg/m^3]
+            const float    absoluteHumidity       = 216.7f * ((humidity / 100.0f) * 6.112f * exp((17.62f * temperature) / (243.12f + temperature)) / (273.15f + temperature)); // [g/m^3]
+            const uint32_t absoluteHumidityScaled = static_cast<uint32_t>(1000.0f * absoluteHumidity);                                                                         // [mg/m^3]
             return absoluteHumidityScaled;
         };
 
@@ -252,7 +252,7 @@ void hAIR_System::threadFunction_sensorDataAcquisition(Timestamp now)
         {
             runtime.task_sda_sqp_IAQraw.updateSuccess(now);
 
-            tmp.sgp_iaqRaw.rawH2 = components.sgp.rawH2;
+            tmp.sgp_iaqRaw.rawH2      = components.sgp.rawH2;
             tmp.sgp_iaqRaw.rawEthanol = components.sgp.rawEthanol;
 
             tmp.sgp_iaqRaw.isValid = true;
@@ -324,8 +324,8 @@ void hAIR_System::threadFunction_sensorDataDistribution(Timestamp now)
     /// Sensor Data
     ////////////////////////////////
 
-    const auto data = sensorData.getCopy();
-    auto jsonStr = data.toJSONtxt(); // broadcastTXT does not accecpt const
+    const auto data    = sensorData.getCopy();
+    auto       jsonStr = data.toJSONtxt(); // broadcastTXT does not accecpt const
 
     ////////////////////////////////
     /// Serial
@@ -439,7 +439,7 @@ bool hAIR_System::loadConfigFromFileOrDefault(bool saveIfLoadFailed)
     if (saveIfLoadFailed)
     {
         uint8_t jsonStr[512]{};
-        auto size = Config::toJSON(config, jsonStr);
+        auto    size = Config::toJSON(config, jsonStr);
 
         auto fileWrite = LITTLEFS.open(HAIR_CONFIG_FILE_NAME, "w");
         fileWrite.write(jsonStr, size);
@@ -461,7 +461,7 @@ bool hAIR_System::initWiFi(bool configWasLoaded)
     {
         Preferences preferences;
         preferences.begin("wifi", true);
-        const auto ssid = preferences.getString("ssid");
+        const auto ssid     = preferences.getString("ssid");
         const auto password = preferences.getString("password");
         preferences.end();
 

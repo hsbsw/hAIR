@@ -34,13 +34,16 @@ class hAIR_System;
 
 class WebServer
 {
-  public:
-    WebServer(hAIR_System& hAIR, AsyncWebServer& asyncWebserver) : hAIR(hAIR), asyncWebserver(asyncWebserver) {}
+public:
+    WebServer(hAIR_System& hAIR, AsyncWebServer& asyncWebserver)
+        : hAIR(hAIR), asyncWebserver(asyncWebserver)
+    {
+    }
 
     bool init();
 
-  private:
-    hAIR_System& hAIR;
+private:
+    hAIR_System&    hAIR;
     AsyncWebServer& asyncWebserver;
 
     void logRequest(AsyncWebServerRequest* request);

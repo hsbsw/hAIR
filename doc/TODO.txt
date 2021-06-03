@@ -50,4 +50,3 @@ Display
 Code
 
 - address SCA warnings
-- employ final .clang-format

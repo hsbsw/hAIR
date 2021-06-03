@@ -46,7 +46,7 @@ constexpr auto HAIR_CONFIG_FILE_NAME{"/hAIR_config.json"};
 
 struct SensorData
 {
-    template <typename T>
+    template<typename T>
     static String helper_toJSONtxt_raw(const T& obj)
     {
         std::stringstream ss;
@@ -54,7 +54,7 @@ struct SensorData
         return ss.str().c_str();
     }
 
-    template <typename T>
+    template<typename T>
     static String helper_toJSONtxt(const T& obj)
     {
         std::stringstream ss;
@@ -79,8 +79,14 @@ struct SensorData
                << "}";
         }
 
-        String toJSONtxt_raw() const { return SensorData::helper_toJSONtxt_raw<SGP_IAQ>(*this); }
-        String toJSONtxt() const { return SensorData::helper_toJSONtxt<SGP_IAQ>(*this); }
+        String toJSONtxt_raw() const
+        {
+            return SensorData::helper_toJSONtxt_raw<SGP_IAQ>(*this);
+        }
+        String toJSONtxt() const
+        {
+            return SensorData::helper_toJSONtxt<SGP_IAQ>(*this);
+        }
     };
 
     struct SGP_IAQraw
@@ -98,8 +104,14 @@ struct SensorData
                << "}";
         }
 
-        String toJSONtxt_raw() const { return SensorData::helper_toJSONtxt_raw<SGP_IAQraw>(*this); }
-        String toJSONtxt() const { return SensorData::helper_toJSONtxt<SGP_IAQraw>(*this); }
+        String toJSONtxt_raw() const
+        {
+            return SensorData::helper_toJSONtxt_raw<SGP_IAQraw>(*this);
+        }
+        String toJSONtxt() const
+        {
+            return SensorData::helper_toJSONtxt<SGP_IAQraw>(*this);
+        }
     };
 
     struct BME_Data
@@ -119,8 +131,14 @@ struct SensorData
                << "}";
         }
 
-        String toJSONtxt_raw() const { return SensorData::helper_toJSONtxt_raw<BME_Data>(*this); }
-        String toJSONtxt() const { return SensorData::helper_toJSONtxt<BME_Data>(*this); }
+        String toJSONtxt_raw() const
+        {
+            return SensorData::helper_toJSONtxt_raw<BME_Data>(*this);
+        }
+        String toJSONtxt() const
+        {
+            return SensorData::helper_toJSONtxt<BME_Data>(*this);
+        }
     };
 
     void appendJSONtxt(std::stringstream& ss) const
@@ -134,22 +152,28 @@ struct SensorData
         ss << "}";
     }
 
-    String toJSONtxt_raw() const { return SensorData::helper_toJSONtxt_raw<SensorData>(*this); }
-    String toJSONtxt() const { return SensorData::helper_toJSONtxt<SensorData>(*this); }
+    String toJSONtxt_raw() const
+    {
+        return SensorData::helper_toJSONtxt_raw<SensorData>(*this);
+    }
+    String toJSONtxt() const
+    {
+        return SensorData::helper_toJSONtxt<SensorData>(*this);
+    }
 
     bool isValid() const
     {
         return sgp_iaq.isValid && sgp_iaqRaw.isValid && bme_data.isValid;
     }
 
-    SGP_IAQ sgp_iaq;
+    SGP_IAQ    sgp_iaq;
     SGP_IAQraw sgp_iaqRaw;
-    BME_Data bme_data;
+    BME_Data   bme_data;
 };
 
 class SensorDataStorage
 {
-  public:
+public:
     SensorData getCopy()
     {
         m_mtx.lock();
@@ -170,7 +194,7 @@ class SensorDataStorage
         return getCopy().toJSONtxt();
     }
 
-  private:
+private:
     SensorData m_data;
     std::mutex m_mtx{};
 };
@@ -182,7 +206,7 @@ extern hAIR_System hAIR;
 
 class hAIR_System
 {
-  public:
+public:
     struct Config
     {
         ////////////////////////////////
@@ -224,15 +248,15 @@ class hAIR_System
             {
                 Config tmp{};
 
-                config.wifi_ssid = doc["wifi"]["ssid"].as<String>();
-                config.wifi_password = doc["wifi"]["password"].as<String>();
-                config.serial_baudrate = doc["serial"]["baudrate"];
-                config.logger_severity = doc["logger"]["severity"];
-                config.sgp_IAQ_frequency = doc["sgp30"]["iaqFrequency"];
-                config.sgp_IAQraw_frequency = doc["sgp30"]["iaqRawFrequency"];
-                config.bme_measure_frequency = doc["bmexxx"]["dataFrequency"];
-                config.sdd_serial_frequency = doc["sdd"]["serial_frequency"];
-                config.sdd_display_frequency = doc["sdd"]["display_frequency"];
+                config.wifi_ssid               = doc["wifi"]["ssid"].as<String>();
+                config.wifi_password           = doc["wifi"]["password"].as<String>();
+                config.serial_baudrate         = doc["serial"]["baudrate"];
+                config.logger_severity         = doc["logger"]["severity"];
+                config.sgp_IAQ_frequency       = doc["sgp30"]["iaqFrequency"];
+                config.sgp_IAQraw_frequency    = doc["sgp30"]["iaqRawFrequency"];
+                config.bme_measure_frequency   = doc["bmexxx"]["dataFrequency"];
+                config.sdd_serial_frequency    = doc["sdd"]["serial_frequency"];
+                config.sdd_display_frequency   = doc["sdd"]["display_frequency"];
                 config.sdd_websocket_frequency = doc["sdd"]["websocket_frequency"];
 
                 if (validate(config))
@@ -249,19 +273,19 @@ class hAIR_System
             // https://arduinojson.org/v6/doc/serialization/
             StaticJsonDocument<512> doc;
 
-            doc["wifi"]["ssid"] = config.wifi_ssid;
-            doc["wifi"]["password"] = config.wifi_password;
-            doc["serial"]["baudrate"] = config.serial_baudrate;
-            doc["logger"]["severity"] = config.logger_severity;
-            doc["sgp30"]["iaqFrequency"] = config.sgp_IAQ_frequency;
-            doc["sgp30"]["iaqRawFrequency"] = config.sgp_IAQraw_frequency;
-            doc["bmexxx"]["dataFrequency"] = config.bme_measure_frequency;
-            doc["sdd"]["serial_frequency"] = config.sdd_serial_frequency;
-            doc["sdd"]["display_frequency"] = config.sdd_display_frequency;
+            doc["wifi"]["ssid"]               = config.wifi_ssid;
+            doc["wifi"]["password"]           = config.wifi_password;
+            doc["serial"]["baudrate"]         = config.serial_baudrate;
+            doc["logger"]["severity"]         = config.logger_severity;
+            doc["sgp30"]["iaqFrequency"]      = config.sgp_IAQ_frequency;
+            doc["sgp30"]["iaqRawFrequency"]   = config.sgp_IAQraw_frequency;
+            doc["bmexxx"]["dataFrequency"]    = config.bme_measure_frequency;
+            doc["sdd"]["serial_frequency"]    = config.sdd_serial_frequency;
+            doc["sdd"]["display_frequency"]   = config.sdd_display_frequency;
             doc["sdd"]["websocket_frequency"] = config.sdd_websocket_frequency;
 
             uint8_t tmp[512]{}; // stupid type forwarding...
-            auto size = serializeJsonPretty(doc, tmp);
+            auto    size = serializeJsonPretty(doc, tmp);
             memcpy(jsonStr, tmp, sizeof(tmp));
             return size;
         }
@@ -291,19 +315,19 @@ class hAIR_System
         // Base Layer
         ////////////////////////////////
 
-        TFT_eSPI tft{};
+        TFT_eSPI       tft{};
         AsyncWebServer asyncWebserver{80};
-        WiFiUDP ntpUDP{};
-        NTPClient ntpclient{ntpUDP, "ptbtime1.ptb.de"};
+        WiFiUDP        ntpUDP{};
+        NTPClient      ntpclient{ntpUDP, "ptbtime1.ptb.de"};
 
         ////////////////////////////////
         // Application Layer
         ////////////////////////////////
 
         hAIR_Formatter formatter{ntpclient};
-        hAIR_Appender appender{formatter, display, websocketLogMessages};
+        hAIR_Appender  appender{formatter, display, websocketLogMessages};
 
-        WebServer webserver{hAIR, asyncWebserver};
+        WebServer        webserver{hAIR, asyncWebserver};
         WebSocketsServer websocketSensorData{81};
         WebSocketsServer websocketLogMessages{82};
 
@@ -317,12 +341,12 @@ class hAIR_System
             using fp_t = void (hAIR_System::*)(Timestamp);
 
             hAIR_System* m_instance;
-            fp_t m_fp;
+            fp_t         m_fp;
 
             void setParams(hAIR_System* instance, fp_t fp)
             {
                 m_instance = instance;
-                m_fp = fp;
+                m_fp       = fp;
             }
 
             void callThreadFunction(Timestamp now)
@@ -333,8 +357,8 @@ class hAIR_System
 
         TaskHandle_t thread_sensorDataAcquisition{};
         TaskHandle_t thread_sensorDataDistribution{};
-        TaskParams threadParams_sensorDataAcquisition{};
-        TaskParams threadParams_sensorDataDistribution{};
+        TaskParams   threadParams_sensorDataAcquisition{};
+        TaskParams   threadParams_sensorDataDistribution{};
     };
 
     struct Runtime
@@ -366,7 +390,7 @@ class hAIR_System
     void setup();
     void loop();
 
-  private:
+private:
     ////////////////////////////////
     /// Member variables
     ////////////////////////////////
@@ -375,9 +399,9 @@ class hAIR_System
     /// Making public getters just because is not worth it
     friend class WebServer;
 
-    Config config{};
-    Components components{};
-    Runtime runtime{};
+    Config            config{};
+    Components        components{};
+    Runtime           runtime{};
     SensorDataStorage sensorData{};
 
     ////////////////////////////////
