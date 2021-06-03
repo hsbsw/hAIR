@@ -29,9 +29,36 @@ Extensions
 - C/C++, https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools
 - C++ Intellisense, https://marketplace.visualstudio.com/items?itemName=austin.code-gnu-global
 - Clang-Tidy, https://marketplace.visualstudio.com/items?itemName=notskm.clang-tidy
+- Clang-Tidy GUI, https://marketplace.visualstudio.com/items?itemName=TimZoet.clangtidygui
 - Clang-Format, https://marketplace.visualstudio.com/items?itemName=xaver.clang-format
 - Duplicate selection or line, https://marketplace.visualstudio.com/items?itemName=geeebe.duplicate
 - GitLens, https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
+
+# clang-tidy checks
+    "clang-tidy.checks": [
+        "clang-diagnostic-",
+        "-android-",
+        "-boost-",
+        "bugprone-",
+        "cert-",
+        "cppcoreguidelines-",
+        "-cppcoreguidelines-pro-bounds-array-to-pointer-decay",
+        "clang-analyzer-",
+        "-fuchsia-",
+        "-google-",
+        "-hicpp-",
+        "llvm-",
+        "-llvm-include-order",
+        "misc-",
+        "modernize-",
+        "-modernize-use-trailing-return-type",
+        "-modernize-concat-nested-namespaces",
+        "-mpi-",
+        "-objc-",
+        "performance-",
+        "readability-*",
+        "-readability-magic-numbers"
+    ]
 
 # First Impressions
 
