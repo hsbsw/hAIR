@@ -2,3 +2,10 @@ OTA:
 https://github.com/SensorsIot/ESP32-OTA/tree/master/0TA_Template_Sketch
 ElegantOTA WebServer: https://www.youtube.com/watch?v=LUcKoJGX38M
 
+clang-tidy
+https://releases.llvm.org/6.0.0/tools/clang/tools/extra/docs/clang-tidy/index.html
+https://github.com/notskm/vscode-clang-tidy/issues/40
+
+clang-format
+https://releases.llvm.org/11.0.0/tools/clang/docs/ClangFormatStyleOptions.html
+https://clang.llvm.org/docs/ClangFormatStyleOptions.html

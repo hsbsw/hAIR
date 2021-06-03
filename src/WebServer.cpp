@@ -38,39 +38,47 @@ bool WebServer::init()
     /// Root
     ////////////////////////////////
 
-    asyncWebserver.on("/", [&](AsyncWebServerRequest* request) { onRoot(request); });
-    asyncWebserver.onNotFound([&](AsyncWebServerRequest* request) { onPageNotFound(request); });
+    asyncWebserver.on("/", [&](AsyncWebServerRequest* request)
+                      { onRoot(request); });
+    asyncWebserver.onNotFound([&](AsyncWebServerRequest* request)
+                              { onPageNotFound(request); });
 
     ////////////////////////////////
     /// Misc
     ////////////////////////////////
 
-    asyncWebserver.on("/restartHAIR", [&](AsyncWebServerRequest* request) { onRestartHAIR(request); });
-    asyncWebserver.on("/sensordata", [&](AsyncWebServerRequest* request) { onSensordata(request); });
+    asyncWebserver.on("/restartHAIR", [&](AsyncWebServerRequest* request)
+                      { onRestartHAIR(request); });
+    asyncWebserver.on("/sensordata", [&](AsyncWebServerRequest* request)
+                      { onSensordata(request); });
 
     ////////////////////////////////
     /// Logger
     ////////////////////////////////
 
-    asyncWebserver.on("/getLoggerSeverity", [&](AsyncWebServerRequest* request) { onGetLoggerSeverity(request); });
+    asyncWebserver.on("/getLoggerSeverity", [&](AsyncWebServerRequest* request)
+                      { onGetLoggerSeverity(request); });
     asyncWebserver.on(
         "/setLoggerSeverity",
         HTTP_POST,
         [](AsyncWebServerRequest* request) {},
         nullptr,
-        [&](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) { onSetLoggerSeverity(request, data, len, index, total); });
+        [&](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total)
+        { onSetLoggerSeverity(request, data, len, index, total); });
 
     ////////////////////////////////
     /// Config
     ////////////////////////////////
 
-    asyncWebserver.on("/downloadConfig", [&](AsyncWebServerRequest* request) { onDownloadConfig(request); });
+    asyncWebserver.on("/downloadConfig", [&](AsyncWebServerRequest* request)
+                      { onDownloadConfig(request); });
     asyncWebserver.on(
         "/uploadConfig",
         HTTP_POST,
         [](AsyncWebServerRequest* request) {},
         nullptr,
-        [&](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) { onUploadConfig(request, data, len, index, total); });
+        [&](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total)
+        { onUploadConfig(request, data, len, index, total); });
 
     return true;
 }

@@ -4,10 +4,14 @@ BasedOnStyle: LLVM
 IndentWidth: 4
 ---
 Language: Cpp
-# Force pointers to the type for C++.
+UseTab: Never
+TabWidth: 4
 DerivePointerAlignment: false
 PointerAlignment: Left
 BreakBeforeBraces: Allman
 AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
 ColumnLimit: 0
+AccessModifierOffset: -2
+NamespaceIndentation: None
+FixNamespaceComments: true

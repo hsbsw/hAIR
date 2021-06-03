@@ -162,7 +162,8 @@ void hAIR_System::setup()
     components.threadParams_sensorDataAcquisition.setParams(this, &hAIR_System::threadFunction_sensorDataAcquisition);
     components.threadParams_sensorDataDistribution.setParams(this, &hAIR_System::threadFunction_sensorDataDistribution);
 
-    auto threadSkeleton = [](void* param) {
+    auto threadSkeleton = [](void* param)
+    {
         auto p = static_cast<hAIR_System::Components::TaskParams*>(param);
 
         while (true)
@@ -213,7 +214,8 @@ void hAIR_System::threadFunction_sensorDataAcquisition(Timestamp now)
         /// If you have a temperature / humidity sensor, you can set the absolute humidity to enable the humditiy compensation for the air quality signals
         /// @param temperature [°C]
         /// @param humidity [%RH]
-        auto getAbsoluteHumidity = [](float temperature, float humidity) -> uint32_t {
+        auto getAbsoluteHumidity = [](float temperature, float humidity) -> uint32_t
+        {
             // approximation formula from Sensirion SGP30 Driver Integration chapter 3.15
             const float absoluteHumidity = 216.7f * ((humidity / 100.0f) * 6.112f * exp((17.62f * temperature) / (243.12f + temperature)) / (273.15f + temperature)); // [g/m^3]
             const uint32_t absoluteHumidityScaled = static_cast<uint32_t>(1000.0f * absoluteHumidity);                                                                // [mg/m^3]

@@ -27,6 +27,7 @@ External IoT service
 Data upload to ubiquity or some other service
    --- via mqtt
    --- via websocket?
+   --- InfluxDB?
 
 -------------
 
@@ -46,6 +47,7 @@ Display
 
 -------------
 
-PlatformIO
+Code
 
-- move clutter from main directory (like mklittlefs.exe, replace_fs.py, etc.)
+- address SCA warnings
+- employ final .clang-format
