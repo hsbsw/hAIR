@@ -546,7 +546,7 @@ bool hAIR_System::initSGP()
 
     // See Baseline acquisition in SDA
     Preferences preferences;
-    preferences.begin("SGP30", true); // TODO this (sometimes?!) fails with: [E][Preferences.cpp:49] begin(): nvs_open failed: NOT_FOUND
+    preferences.begin("SGP30", true);
     uint16_t TVOC_baseline = preferences.getUShort("TVOC_baseline", 0U);
     uint16_t eCO2_baseline = preferences.getUShort("eCO2_baseline", 0U);
     preferences.end();

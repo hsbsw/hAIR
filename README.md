@@ -33,6 +33,7 @@ Extensions
 - Clang-Format, https://marketplace.visualstudio.com/items?itemName=xaver.clang-format
 - Duplicate selection or line, https://marketplace.visualstudio.com/items?itemName=geeebe.duplicate
 - GitLens, https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
+- Todo Tree, https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.todo-tree
 
 # clang-tidy checks
     "clang-tidy.checks": [

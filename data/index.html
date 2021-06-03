@@ -151,7 +151,7 @@
                                             <div class="file-field input-field">
                                                 <button class="btn waves-effect waves-light">Select
                                                     <i class="material-icons right">send</i>
-                                                    <input id="fileinput_config_file" type="file" accept=".json"> <!-- TODO filetype filter -->
+                                                    <input id="fileinput_config_file" type="file" accept=".json"> <!-- TODO(hsbsw) filetype filter -->
                                                 </button>
                                                 <div class="file-path-wrapper">
                                                     <input class="file-path validate" type="text" placeholder="hAIR_config.json">
@@ -556,7 +556,7 @@
         setTimeout(getLoggerSeverityUponLoad, 3000);
         function getLoggerSeverityUponLoad() {
             try {
-                // TODO doesn't refresh / update
+                // TODO(hsbsw) doesn't refresh / update
                 select_logger_severity.selectedIndex = getLoggerSeverity() + 1;
                 select_logger_severity.form.submit();
                 select_logger_severity.submit();

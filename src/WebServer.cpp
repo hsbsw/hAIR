@@ -188,7 +188,7 @@ void WebServer::onUploadConfig(AsyncWebServerRequest* request, uint8_t* data_, s
     data[len] = 0;
     memcpy(data, data_, len);
 
-    // TODO we get the FormData() here, so until I know of a better method I have to manually parse the body
+    // TODO(hsbsw) we get the FormData() here, so until I know of a better method I have to manually parse the body
     String str{data};
     str = str.substring(str.indexOf("Content-Type: application/json") + strlen("Content-Type: application/json"));
     str = str.substring(str.indexOf("{"));

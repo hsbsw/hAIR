@@ -58,7 +58,7 @@ class hAIR_Formatter
         const auto line{record.getLine()};
         const auto message{record.getMessage()};
 
-        // TODO get threadID/threadName for logging
+        // TODO(hsbsw) get threadID/threadName for logging
         //extern void vTaskGetInfo(TaskHandle_t xTask, TaskStatus_t* pxTaskStatus, BaseType_t xGetFreeStackSpace, eTaskState eState) PRIVILEGED_FUNCTION;
         //extern void* pxCurrentTCB;
         //TaskStatus_t xTaskDetails;

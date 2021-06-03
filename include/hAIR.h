@@ -300,7 +300,6 @@ class hAIR_System
         // Application Layer
         ////////////////////////////////
 
-        // TODO move logger stuff to components
         hAIR_Formatter formatter{ntpclient};
         hAIR_Appender appender{formatter, display, websocketLogMessages};
 
