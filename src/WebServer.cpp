@@ -99,6 +99,10 @@ bool WebServer::init()
     return true;
 }
 
+////////////////////////////////
+/// Logging
+////////////////////////////////
+
 void WebServer::logRequest(AsyncWebServerRequest* request)
 {
     PLOGD << "HTTP ["
@@ -106,6 +110,17 @@ void WebServer::logRequest(AsyncWebServerRequest* request)
           << "] Request from ["
           << request->client()->remoteIP().toString().c_str()
           << "] of [" << request->url().c_str() << "]";
+}
+
+auto WebServer::logReply(AsyncWebServerRequest* request, HTTPStatusCode code) -> int32_t
+{
+    PLOGD << "HTTP ["
+          << request->methodToString()
+          << "] Replying to ["
+          << request->client()->remoteIP().toString().c_str()
+          << "] of [" << request->url().c_str()
+          << "} with code [" << enum_cast_to_underlying(code) << "]";
+    return enum_cast_to_underlying(code);
 }
 
 ////////////////////////////////
@@ -126,7 +141,7 @@ void WebServer::onPageNotFound(AsyncWebServerRequest* request)
     logRequest(request);
 
     PLOGI << "Unknown URL " << request->url().c_str();
-    request->send(404, "text/plain", "404: Not found");
+    request->send(logReply(request, HTTPStatusCode::NotFound), "text/plain", "404: Not found");
 }
 
 ////////////////////////////////
@@ -147,7 +162,7 @@ void WebServer::onSensordata(AsyncWebServerRequest* request)
     logRequest(request);
 
     const auto json = hAIR.sensorData.getCopyAsJSONtxt();
-    request->send(200, "application/json", json.c_str());
+    request->send(logReply(request, HTTPStatusCode::Ok), "application/json", json.c_str());
 }
 
 ////////////////////////////////
@@ -161,7 +176,7 @@ void WebServer::onGetLoggerSeverity(AsyncWebServerRequest* request)
     String json = "{\"severity\":";
     json += plog::get()->getMaxSeverity();
     json += "}";
-    request->send(200, "application/json", json);
+    request->send(logReply(request, HTTPStatusCode::Ok), "application/json", json);
 }
 
 void WebServer::onSetLoggerSeverity(AsyncWebServerRequest* request, uint8_t* data_, size_t len, size_t /*index*/, size_t /*total*/)
@@ -188,8 +203,7 @@ void WebServer::onSetLoggerSeverity(AsyncWebServerRequest* request, uint8_t* dat
         }
     }
 
-    free(data);
-    request->send(200);
+    request->send(logReply(request, HTTPStatusCode::Ok));
 }
 
 ////////////////////////////////
@@ -225,12 +239,10 @@ void WebServer::onUploadConfig(AsyncWebServerRequest* request, uint8_t* data_, s
         fileWrite.write(reinterpret_cast<const uint8_t*>(str.c_str()), str.length());
         fileWrite.close();
 
-        request->send(200);
+        request->send(logReply(request, HTTPStatusCode::Ok));
     }
     else
     {
-        request->send(406); // Not Acceptable
+        request->send(logReply(request, HTTPStatusCode::NotAcceptable));
     }
-
-    free(data);
 }

@@ -35,6 +35,13 @@ class hAIR_System;
 class WebServer
 {
 public:
+    enum class HTTPStatusCode
+    {
+        Ok            = 200,
+        NotFound      = 404,
+        NotAcceptable = 406
+    };
+
     WebServer(hAIR_System& hAIR, AsyncWebServer& asyncWebserver)
         : hAIR(hAIR), asyncWebserver(asyncWebserver)
     {
@@ -46,7 +53,12 @@ private:
     hAIR_System&    hAIR;
     AsyncWebServer& asyncWebserver;
 
+    ////////////////////////////////
+    /// Logging
+    ////////////////////////////////
+
     void logRequest(AsyncWebServerRequest* request);
+    auto logReply(AsyncWebServerRequest* request, HTTPStatusCode code) -> int32_t;
 
     ////////////////////////////////
     /// Root Callbacks
