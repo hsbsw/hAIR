@@ -38,7 +38,8 @@ bool WebServer::init()
     /// Root
     ////////////////////////////////
 
-    asyncWebserver.on("/", [&](AsyncWebServerRequest* request)
+    asyncWebserver.on("/",
+                      [&](AsyncWebServerRequest* request)
                       {
                           onRoot(request);
                       });
@@ -51,11 +52,13 @@ bool WebServer::init()
     /// Misc
     ////////////////////////////////
 
-    asyncWebserver.on("/restartHAIR", [&](AsyncWebServerRequest* request)
+    asyncWebserver.on("/restartHAIR",
+                      [&](AsyncWebServerRequest* request)
                       {
                           onRestartHAIR(request);
                       });
-    asyncWebserver.on("/sensordata", [&](AsyncWebServerRequest* request)
+    asyncWebserver.on("/sensordata",
+                      [&](AsyncWebServerRequest* request)
                       {
                           onSensordata(request);
                       });
@@ -64,7 +67,8 @@ bool WebServer::init()
     /// Logger
     ////////////////////////////////
 
-    asyncWebserver.on("/getLoggerSeverity", [&](AsyncWebServerRequest* request)
+    asyncWebserver.on("/getLoggerSeverity",
+                      [&](AsyncWebServerRequest* request)
                       {
                           onGetLoggerSeverity(request);
                       });
@@ -82,7 +86,8 @@ bool WebServer::init()
     /// Config
     ////////////////////////////////
 
-    asyncWebserver.on("/downloadConfig", [&](AsyncWebServerRequest* request)
+    asyncWebserver.on("/downloadConfig",
+                      [&](AsyncWebServerRequest* request)
                       {
                           onDownloadConfig(request);
                       });
@@ -161,7 +166,7 @@ void WebServer::onSensordata(AsyncWebServerRequest* request)
 {
     logRequest(request);
 
-    const auto json = hAIR.sensorData.getCopyAsJSONtxt();
+    const auto json = sensorData.getCopyAsJSONtxt();
     request->send(logReply(request, HTTPStatusCode::Ok), "application/json", json.c_str());
 }
 

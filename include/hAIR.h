@@ -28,6 +28,7 @@
 
 #include "Display.h"
 #include "Logger.h"
+#include "SensorData.h"
 #include "Utilities.h"
 #include "WebServer.h"
 #include <Adafruit_SGP30.h>
@@ -43,166 +44,6 @@
 constexpr auto HAIR_VERSION_STRING{"0.1"};
 constexpr auto HAIR_WIFI_HOSTNAME{"hAIR"};
 constexpr auto HAIR_CONFIG_FILE_NAME{"/hAIR_config.json"};
-
-struct SensorData
-{
-    template<typename T>
-    static String helper_toJSONtxt_raw(const T& obj)
-    {
-        std::stringstream ss;
-        obj.appendJSONtxt(ss);
-        return ss.str().c_str();
-    }
-
-    template<typename T>
-    static String helper_toJSONtxt(const T& obj)
-    {
-        std::stringstream ss;
-        ss << '{';
-        obj.appendJSONtxt(ss);
-        ss << '}';
-        return ss.str().c_str();
-    }
-
-    struct SGP_IAQ
-    {
-        bool isValid;
-
-        uint16_t TVOC; // [ppb]
-        uint16_t eCO2; // [ppm]
-
-        void appendJSONtxt(std::stringstream& ss) const
-        {
-            ss << "\"SGP30_IAQ\": {"
-               << " \"TVOC\": " << TVOC << ","
-               << " \"eCO2\": " << eCO2 << " "
-               << "}";
-        }
-
-        String toJSONtxt_raw() const
-        {
-            return SensorData::helper_toJSONtxt_raw<SGP_IAQ>(*this);
-        }
-        String toJSONtxt() const
-        {
-            return SensorData::helper_toJSONtxt<SGP_IAQ>(*this);
-        }
-    };
-
-    struct SGP_IAQraw
-    {
-        bool isValid;
-
-        uint16_t rawH2;      // [AU]
-        uint16_t rawEthanol; // [AU]
-
-        void appendJSONtxt(std::stringstream& ss) const
-        {
-            ss << "\"SGP30_IAQraw\": {"
-               << " \"rawH2\": " << rawH2 << ","
-               << " \"rawEthanol\": " << rawEthanol << " "
-               << "}";
-        }
-
-        String toJSONtxt_raw() const
-        {
-            return SensorData::helper_toJSONtxt_raw<SGP_IAQraw>(*this);
-        }
-        String toJSONtxt() const
-        {
-            return SensorData::helper_toJSONtxt<SGP_IAQraw>(*this);
-        }
-    };
-
-    struct BME_Data
-    {
-        bool isValid;
-
-        float temperature{22.1}; // [°C]
-        float humidity{45.2};    // [%] / [%RH]
-        float pressure{1013.25}; // [hPa]
-
-        void appendJSONtxt(std::stringstream& ss) const
-        {
-            ss << "\"BMExxx_Data\": {"
-               << " \"temperature\": " << temperature << ","
-               << " \"humidity\": " << humidity << ","
-               << " \"pressure\": " << pressure << " "
-               << "}";
-        }
-
-        String toJSONtxt_raw() const
-        {
-            return SensorData::helper_toJSONtxt_raw<BME_Data>(*this);
-        }
-        String toJSONtxt() const
-        {
-            return SensorData::helper_toJSONtxt<BME_Data>(*this);
-        }
-    };
-
-    void appendJSONtxt(std::stringstream& ss) const
-    {
-        ss << "\"hAIR\": {";
-        sgp_iaq.appendJSONtxt(ss);
-        ss << ", ";
-        sgp_iaqRaw.appendJSONtxt(ss);
-        ss << ", ";
-        bme_data.appendJSONtxt(ss);
-        ss << "}";
-    }
-
-    String toJSONtxt_raw() const
-    {
-        return SensorData::helper_toJSONtxt_raw<SensorData>(*this);
-    }
-    String toJSONtxt() const
-    {
-        return SensorData::helper_toJSONtxt<SensorData>(*this);
-    }
-
-    bool isValid() const
-    {
-        return sgp_iaq.isValid && sgp_iaqRaw.isValid && bme_data.isValid;
-    }
-
-    SGP_IAQ    sgp_iaq;
-    SGP_IAQraw sgp_iaqRaw;
-    BME_Data   bme_data;
-};
-
-class SensorDataStorage
-{
-public:
-    SensorData getCopy()
-    {
-        m_mtx.lock();
-        SensorData tmp{m_data};
-        m_mtx.unlock();
-        return tmp;
-    }
-
-    void update(SensorData data)
-    {
-        m_mtx.lock();
-        m_data = data;
-        m_mtx.unlock();
-    }
-
-    String getCopyAsJSONtxt()
-    {
-        return getCopy().toJSONtxt();
-    }
-
-private:
-    SensorData m_data;
-    std::mutex m_mtx{};
-};
-
-class hAIR_System;
-
-/// main.cpp has to define this (is needed for static methods)
-extern hAIR_System hAIR;
 
 class hAIR_System
 {
@@ -320,6 +161,11 @@ public:
 
     struct Components
     {
+        Components(SensorDataStorage& sensorData)
+            : webserver{sensorData, asyncWebserver}
+        {
+        }
+
         ////////////////////////////////
         // Base Layer
         ////////////////////////////////
@@ -336,7 +182,7 @@ public:
         hAIR_Formatter formatter{ntpclient};
         hAIR_Appender  appender{formatter, display, websocketLogMessages};
 
-        WebServer        webserver{hAIR, asyncWebserver};
+        WebServer        webserver;
         WebSocketsServer websocketSensorData{81};
         WebSocketsServer websocketLogMessages{82};
 
@@ -344,30 +190,6 @@ public:
 
         // https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/9_Gas_Sensors/Datasheets/Sensirion_Gas_Sensors_Datasheet_SGP30.pdf
         Adafruit_SGP30 sgp{};
-
-        struct TaskParams
-        {
-            using fp_t = void (hAIR_System::*)(Timestamp);
-
-            hAIR_System* m_instance;
-            fp_t         m_fp;
-
-            void setParams(hAIR_System* instance, fp_t fp)
-            {
-                m_instance = instance;
-                m_fp       = fp;
-            }
-
-            void callThreadFunction(Timestamp now) const
-            {
-                (m_instance->*m_fp)(now);
-            }
-        };
-
-        TaskHandle_t thread_sensorDataAcquisition{};
-        TaskHandle_t thread_sensorDataDistribution{};
-        TaskParams   threadParams_sensorDataAcquisition{};
-        TaskParams   threadParams_sensorDataDistribution{};
     };
 
     struct Runtime
@@ -421,12 +243,8 @@ private:
     /// Member variables
     ////////////////////////////////
 
-    /// WebServer needs access to our private variables
-    /// Making public getters just because is not worth it
-    friend class WebServer;
-
     Config            config{};
-    Components        components{};
+    Components        components{sensorData};
     Runtime           runtime{};
     SensorDataStorage sensorData{};
     POST              post{};
@@ -438,6 +256,30 @@ private:
     void threadFunction_sensorDataAcquisition(Timestamp now);
     void threadFunction_sensorDataDistribution(Timestamp now);
     void threadFunction_loop(Timestamp now);
+
+    // We need to use these task params because unlike std::thread, xTaskCreatePinnedToCore won't take a capturing lambda. So 'this' pointer has to live somewhere 'static'
+    struct TaskParams
+    {
+        using fp_t = void (hAIR_System::*)(Timestamp);
+
+        TaskParams(hAIR_System& instance, fp_t fp)
+            : m_instance(instance), m_fp(fp)
+        {
+        }
+
+        hAIR_System& m_instance;
+        fp_t         m_fp;
+
+        void callThreadFunction(Timestamp now) const
+        {
+            (m_instance.*m_fp)(now);
+        }
+    };
+
+    TaskHandle_t thread_sensorDataAcquisition{};
+    TaskHandle_t thread_sensorDataDistribution{};
+    TaskParams   threadParams_sensorDataAcquisition{*this, &hAIR_System::threadFunction_sensorDataAcquisition};
+    TaskParams   threadParams_sensorDataDistribution{*this, &hAIR_System::threadFunction_sensorDataDistribution};
 
     ////////////////////////////////
     /// Init

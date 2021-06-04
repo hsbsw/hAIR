@@ -26,11 +26,9 @@
 
 #pragma once
 
+#include "SensorData.h"
 #include <Arduino.h>
 #include <ESPAsyncWebServer.h>
-
-// Forward declare hAIR_System type
-class hAIR_System;
 
 class WebServer
 {
@@ -42,16 +40,16 @@ public:
         NotAcceptable = 406
     };
 
-    WebServer(hAIR_System& hAIR, AsyncWebServer& asyncWebserver)
-        : hAIR(hAIR), asyncWebserver(asyncWebserver)
+    WebServer(SensorDataStorage& sensorData, AsyncWebServer& asyncWebserver)
+        : sensorData(sensorData), asyncWebserver(asyncWebserver)
     {
     }
 
     bool init();
 
 private:
-    hAIR_System&    hAIR;
-    AsyncWebServer& asyncWebserver;
+    SensorDataStorage& sensorData;
+    AsyncWebServer&    asyncWebserver;
 
     ////////////////////////////////
     /// Logging

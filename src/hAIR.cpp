@@ -156,13 +156,9 @@ void hAIR_System::setup()
     constexpr auto THREAD_SDA_NAME{"sda"};
     constexpr auto THREAD_SDD_NAME{"sdd"};
 
-    // We need to use these task params because unlike std::thread, xTaskCreatePinnedToCore won't take a capturing lambda. So 'this' pointer has to live somewhere 'global'
-    components.threadParams_sensorDataAcquisition.setParams(this, &hAIR_System::threadFunction_sensorDataAcquisition);
-    components.threadParams_sensorDataDistribution.setParams(this, &hAIR_System::threadFunction_sensorDataDistribution);
-
     auto threadSkeleton = [](void* param)
     {
-        auto* p = static_cast<hAIR_System::Components::TaskParams*>(param);
+        auto* p = static_cast<hAIR_System::TaskParams*>(param);
 
         while (true)
         {
@@ -181,9 +177,9 @@ void hAIR_System::setup()
     xTaskCreatePinnedToCore(threadSkeleton,
                             THREAD_SDA_NAME,
                             THREAD_STACK_SIZE,
-                            &components.threadParams_sensorDataAcquisition,
+                            &threadParams_sensorDataAcquisition,
                             THREAD_PRIORITY,
-                            &components.thread_sensorDataAcquisition,
+                            &thread_sensorDataAcquisition,
                             THREAD_SDA_CORE);
 
     runtime.task_sdd_serial.setFrequency(config.sdd_serial_frequency);
@@ -192,9 +188,9 @@ void hAIR_System::setup()
     xTaskCreatePinnedToCore(threadSkeleton,
                             THREAD_SDD_NAME,
                             THREAD_STACK_SIZE,
-                            &components.threadParams_sensorDataDistribution,
+                            &threadParams_sensorDataDistribution,
                             THREAD_PRIORITY,
-                            &components.thread_sensorDataDistribution,
+                            &thread_sensorDataDistribution,
                             THREAD_SDD_CORE);
 }
 
