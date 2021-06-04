@@ -43,12 +43,12 @@ public:
     {
     }
 
-    plog::util::nstring header()
+    plog::util::nstring header() const
     {
         return plog::util::nstring();
     }
 
-    plog::util::nstring format(const plog::Record& record)
+    plog::util::nstring format(const plog::Record& record) const
     {
         const auto  dateTime{getFormattedDate(ntpclient.getEpochTime())};
         const auto  now{millis()};

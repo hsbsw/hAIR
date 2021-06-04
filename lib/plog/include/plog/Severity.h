@@ -1,5 +1,4 @@
 #pragma once
-#include <cctype>
 
 namespace plog
 {
@@ -40,7 +39,7 @@ namespace plog
 
     inline Severity severityFromString(const char* str)
     {
-        switch (std::toupper(str[0]))
+        switch (str[0] + ('A' - 'a'))
         {
         case 'F':
             return fatal;

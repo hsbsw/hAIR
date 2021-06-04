@@ -62,7 +62,7 @@ int main()
     }
 }
 
-6. Structured bindings do not work
+6. Structured bindings do not work (even with c++17)
 
 int a = 1, b = 2;
 const auto& [x, y] = std::tie(a, b); // x and y are of type int&

@@ -105,12 +105,12 @@ public:
         m_ts_lastSuccess = now;
     }
 
-    inline Timestamp getLastTry()
+    inline Timestamp getLastTry() const
     {
         return m_ts_lastTry;
     }
 
-    inline Timestamp getLastSuccess()
+    inline Timestamp getLastSuccess() const
     {
         return m_ts_lastSuccess;
     }
@@ -118,12 +118,12 @@ public:
     inline void setFrequency(float frequency)
     {
         m_frequency = frequency;
-        m_delayTime = 1000.0f / frequency;
+        m_delayTime = 1000.0F / frequency;
     }
 
     inline void setDelayTime(int32_t delayTime)
     {
-        m_frequency = static_cast<int32_t>(1000.0f / delayTime);
+        m_frequency = static_cast<int32_t>(1000.0F / delayTime);
         m_delayTime = delayTime;
     }
 

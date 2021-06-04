@@ -296,8 +296,8 @@ public:
 
         static inline bool validate(const Config& config)
         {
-            constexpr auto FREQ_MIN{0.0f};
-            constexpr auto FREQ_MAX{1000.0f};
+            constexpr auto FREQ_MIN{0.0F};
+            constexpr auto FREQ_MAX{1000.0F};
             return isWithin(config.serial_baudrate, 9600, 10000000) &&
                    isWithin(plog::Severity(config.logger_severity), plog::none, plog::verbose) &&
                    isWithin(config.sgp_IAQ_frequency, FREQ_MIN, FREQ_MAX) &&
@@ -349,7 +349,7 @@ public:
                 m_fp       = fp;
             }
 
-            void callThreadFunction(Timestamp now)
+            void callThreadFunction(Timestamp now) const
             {
                 (m_instance->*m_fp)(now);
             }

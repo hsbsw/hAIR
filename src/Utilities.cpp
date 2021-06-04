@@ -122,7 +122,9 @@ String getFormattedDate(unsigned long secs)
     static const uint8_t monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     while ((days += (LEAP_YEAR(year) ? 366 : 365)) <= rawTime)
+    {
         year++;
+    }
     rawTime -= days - (LEAP_YEAR(year) ? 366 : 365); // now it is days in this year, starting at 0
     days = 0;
     for (month = 0; month < 12; month++)
@@ -137,7 +139,9 @@ String getFormattedDate(unsigned long secs)
             monthLength = monthDays[month];
         }
         if (rawTime < monthLength)
+        {
             break;
+        }
         rawTime -= monthLength;
     }
     String monthStr = ++month < 10 ? "0" + String(month) : String(month);       // jan is month 1

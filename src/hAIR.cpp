@@ -43,7 +43,7 @@
 
 // IDK, 100hz maybe?
 constexpr auto THREAD_FREQUENCY{100};
-constexpr auto THREAD_DELAYTIME{static_cast<int32_t>(1000.0f / THREAD_FREQUENCY)};
+constexpr auto THREAD_DELAYTIME{static_cast<int32_t>(1000.0F / THREAD_FREQUENCY)};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Main
@@ -164,7 +164,7 @@ void hAIR_System::setup()
 
     auto threadSkeleton = [](void* param)
     {
-        auto p = static_cast<hAIR_System::Components::TaskParams*>(param);
+        auto* p = static_cast<hAIR_System::Components::TaskParams*>(param);
 
         while (true)
         {
@@ -456,7 +456,7 @@ bool hAIR_System::initWiFi(bool configWasLoaded)
     // If the config was loaded and the file stated to use preferences, we try to load the preferences,
     // If the config was not loaded, attempt to load preferences anyway, since we have no data in the default values of the config
     // Else, the config was loaded but ssid/password are custom, then use these values
-    if ((configWasLoaded && (config.wifi_ssid == "USE_PREFERENCES" || config.wifi_password == "USE_PREFERENCES")) ||
+    if ((configWasLoaded && ((config.wifi_ssid == String{"USE_PREFERENCES"}) || (config.wifi_password == String{"USE_PREFERENCES"}))) ||
         !configWasLoaded)
     {
         Preferences preferences;

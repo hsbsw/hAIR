@@ -28,13 +28,10 @@
 #include "Utilities.h"
 #include "hAIR.h"
 
-namespace
-{
 constexpr auto XMIN{10};
 constexpr auto YMIN{20};
 constexpr auto LINE_INC{30};
 constexpr auto COLUMN_INC{30};
-} // namespace
 
 void Display::setCursor(int x, int y)
 {
