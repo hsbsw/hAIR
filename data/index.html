@@ -307,6 +307,10 @@
         function createChartJs(target, title, ytext) {
             return new Chart(target, {
                 type: 'line',
+                animation: false,
+                //animation: {
+                //    duration: 0
+                //},
                 data: {
                     labels: [],
                     datasets: [{
@@ -362,6 +366,7 @@
 
         function addSensorDataToSingleHighchart(chart, data) {
             var x = (new Date()).getTime();
+            x = x + 2 * 3600 * 1000 // TODO(hsbsw) use library to convert to correct time zone
             var y = parseFloat(data);
             chart.series[0].addPoint([x, y], true, chart.series[0].data.length > 40, false);
         }
@@ -671,9 +676,12 @@
         ////////////////////////////////
 
         var cnt = 0;
-        //setInterval(test, 100);
+        //setInterval(test, 1000);
         function test() {
             cnt = cnt + 1;
+
+            addSensorDataToSingleHighchart(highchart_sgp_tvoc, cnt)
+            addSensorDataToSingleChartJs(chartjs_bme_temperature, cnt)
 
             /*addLineToTextArea(
                 "sensor data " + cnt + "\n",
