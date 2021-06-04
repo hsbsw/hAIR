@@ -50,13 +50,13 @@ public:
 
     plog::util::nstring format(const plog::Record& record)
     {
-        const auto dateTime{getFormattedDate(ntpclient.getEpochTime())};
-        const auto now{millis()};
-        const auto severity{severityToString(record.getSeverity())};
-        const auto threadID{record.getTid()};
-        const auto func{record.getFunc()};
-        const auto line{record.getLine()};
-        const auto message{record.getMessage()};
+        const auto  dateTime{getFormattedDate(ntpclient.getEpochTime())};
+        const auto  now{millis()};
+        const auto* severity{severityToString(record.getSeverity())};
+        const auto  threadID{record.getTid()};
+        const auto* func{record.getFunc()};
+        const auto  line{record.getLine()};
+        const auto* message{record.getMessage()};
 
         // TODO(hsbsw) get threadID/threadName for logging
         //extern void vTaskGetInfo(TaskHandle_t xTask, TaskStatus_t* pxTaskStatus, BaseType_t xGetFreeStackSpace, eTaskState eState) PRIVILEGED_FUNCTION;

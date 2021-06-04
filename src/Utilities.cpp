@@ -107,9 +107,10 @@ String getFormattedTime(unsigned long secs)
 // currently assumes UTC timezone, instead of using this->_timeOffset
 String getFormattedDate(unsigned long secs)
 {
-    unsigned long        rawTime = secs / 86400L; // in days
-    unsigned long        days = 0, year = 1970;
-    uint8_t              month;
+    unsigned long        rawTime     = secs / 86400L; // in days
+    unsigned long        days        = 0;
+    unsigned long        year        = 1970;
+    uint8_t              month       = 0;
     static const uint8_t monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     while ((days += (LEAP_YEAR(year) ? 366 : 365)) <= rawTime)

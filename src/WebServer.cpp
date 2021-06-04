@@ -164,17 +164,17 @@ void WebServer::onGetLoggerSeverity(AsyncWebServerRequest* request)
     request->send(200, "application/json", json);
 }
 
-void WebServer::onSetLoggerSeverity(AsyncWebServerRequest* request, uint8_t* data_, size_t len, size_t index, size_t total)
+void WebServer::onSetLoggerSeverity(AsyncWebServerRequest* request, uint8_t* data_, size_t len, size_t /*index*/, size_t /*total*/)
 {
     logRequest(request);
 
     // data is not \0 terminated, I have no other idea how to handle this apart from using malloc
-    char* data = static_cast<char*>(malloc(len + 1));
-    data[len]  = 0;
-    memcpy(data, data_, len);
+    std::unique_ptr<char[]> data{std::make_unique<char[]>(len + 1)};
+    data[len] = '\0';
+    memcpy(data.get(), data_, len);
 
     StaticJsonDocument<128> doc;
-    DeserializationError    err = deserializeJson(doc, data);
+    DeserializationError    err = deserializeJson(doc, data.get());
     if (err == DeserializationError::Ok)
     {
         const auto severity_ = doc["severity"].as<int>();
@@ -203,17 +203,17 @@ void WebServer::onDownloadConfig(AsyncWebServerRequest* request)
     request->send(LITTLEFS, HAIR_CONFIG_FILE_NAME, "application/json");
 }
 
-void WebServer::onUploadConfig(AsyncWebServerRequest* request, uint8_t* data_, size_t len, size_t index, size_t total)
+void WebServer::onUploadConfig(AsyncWebServerRequest* request, uint8_t* data_, size_t len, size_t /*index*/, size_t /*total*/)
 {
     logRequest(request);
 
     // data is not \0 terminated, I have no other idea how to handle this apart from using malloc
-    char* data = static_cast<char*>(malloc(len + 1));
-    data[len]  = 0;
-    memcpy(data, data_, len);
+    std::unique_ptr<char[]> data{std::make_unique<char[]>(len + 1)};
+    data[len] = '\0';
+    memcpy(data.get(), data_, len);
 
     // TODO(hsbsw) we get the FormData() here, so until I know of a better method I have to manually parse the body
-    String str{data};
+    String str{data.get()};
     str = str.substring(str.indexOf("Content-Type: application/json") + strlen("Content-Type: application/json"));
     str = str.substring(str.indexOf("{"));
     str = str.substring(0, str.indexOf("---------------") - 1);
