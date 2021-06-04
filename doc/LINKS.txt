@@ -9,3 +9,6 @@ https://github.com/notskm/vscode-clang-tidy/issues/40
 clang-format
 https://releases.llvm.org/11.0.0/tools/clang/docs/ClangFormatStyleOptions.html
 https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
+includes
+https://stackoverflow.com/a/15053852
