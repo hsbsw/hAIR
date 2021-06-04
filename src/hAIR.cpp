@@ -54,36 +54,21 @@ void hAIR_System::setup()
     // Initialization and POST is interleveaved
     // We start printing/displaying the POST after loading the config file, since we only then know which baudrate to use.
     // Printing and then reprinting would be a lot of clutter.
-    struct
-    {
-        bool display;        /// true => success;   false => failed
-        bool filesystem;     /// true => mounted?;  false => created
-        bool config;         /// true => loaded;    false => default
-        bool wifi;           /// true => connected; false => failed
-        bool mdns;           /// true => success;   false => failed
-        bool ota;            /// true => success;   false => failed
-        bool ntpclient;      /// true => connected; false => failed
-        bool asyncWebserver; /// true => started;   false => failed
-        bool logger;         /// true => success;   false => failed
-
-        bool webserver;
-        bool sgp30;
-    } post;
 
     ////////////////////////////////
     /// Base Layer
     ////////////////////////////////
 
     // We see the Serial and TFT display as given, so we init it first
-    post.display = initDisplay();
+    initDisplay();
 
     // Since we want to load out config file to init everything, we have to init the filesystem next
     constexpr auto FORMAT_FILESYSTEM_IF_INIT_FAILED{true};
-    post.filesystem = initFilesystem(FORMAT_FILESYSTEM_IF_INIT_FAILED);
+    initFilesystem(FORMAT_FILESYSTEM_IF_INIT_FAILED);
 
     // Load config file
     constexpr auto CONFIG_CREATE_IF_LOAD_FAILED{true};
-    post.config = loadConfigFromFileOrDefault(CONFIG_CREATE_IF_LOAD_FAILED);
+    loadConfigFromFileOrDefault(CONFIG_CREATE_IF_LOAD_FAILED);
 
     // Serial with baudrate (config is either defaulted or loaded)
     Serial.begin(config.serial_baudrate);
@@ -96,30 +81,33 @@ void hAIR_System::setup()
 
     // WiFi
     printAndDisplayPOSTcomponent("WiFi");
-    post.wifi = initWiFi(post.config);
+    initWiFi(post.config);
     printAndDisplayPOSTresult(post.wifi ? WiFi.localIP().toString() : "Failed", !post.wifi);
 
     // MDNS
-    post.mdns = initMDNS();
+    initMDNS();
     String mdnsPOST{HAIR_WIFI_HOSTNAME};
     mdnsPOST += ".local";
     printAndDisplayPOSTline("MDNS", post.mdns ? mdnsPOST : "----", !(post.mdns && post.wifi));
 
     // OTA
-    post.ota = initOTA();
+    initOTA();
     printAndDisplayPOSTline("OTA", post.ota ? "Running" : "Failed", !post.ota);
 
     // NTP
     printAndDisplayPOSTcomponent("NTP");
-    post.ntpclient = post.wifi ? initNTP() : false;
+    if (post.wifi)
+    {
+        initNTP();
+    }
     printAndDisplayPOSTresult(post.ntpclient ? getFormattedDate(components.ntpclient.getEpochTime()) : "----", !post.ntpclient);
 
     // WebServer
-    post.asyncWebserver = initAsyncWebserver();
+    initAsyncWebserver();
     printAndDisplayPOSTline("AsyncWebserver", post.asyncWebserver ? "Running" : "Failed", !post.asyncWebserver);
 
     // Logger
-    post.logger = initLogger();
+    initLogger();
     printAndDisplayPOSTline("Logger", post.logger ? "OK" : "Failed", !post.logger);
     printAndDisplayPOSTline("Severity", severityToString(plog::Severity(config.logger_severity)), !post.logger);
 
@@ -133,15 +121,25 @@ void hAIR_System::setup()
     components.websocketSensorData.begin();
     components.websocketLogMessages.begin();
 
-    post.sgp30 = initSGP();
+    initSGP();
     printAndDisplayPOSTline("SGP30", post.sgp30 ? "OK" : "Failed", !post.sgp30);
+    printAndDisplayPOSTline("SGP30_BL", post.sgp30_baseline ? "Set from Prefs" : "Failed", !post.sgp30_baseline);
+
+    // Initialization done, show the POST for a little while
+    //delay(10000);
+    delay(100);
+
+    // Blank screen
+    components.tft.fillScreen(TFT_BLACK);
 
     ////////////////////////////////
-    /// Done
+    /// Config
     ////////////////////////////////
 
-    // Initialization done, show the post for a little while
-    //delay(5000);
+    PLOGI << "Config: " << Config::toJSON(config).c_str();
+
+    // Now show the config for a little while
+    //delay(10000);
     delay(100);
 
     // Blank screen
@@ -180,12 +178,24 @@ void hAIR_System::setup()
     runtime.task_sda_sqp_IAQraw.setFrequency(config.sgp_IAQraw_frequency);
     runtime.task_sda_sqp_baseline.setFrequency(60000); // Adafruit example is 60 seconds
     runtime.task_sda_bme_measure.setFrequency(config.bme_measure_frequency);
-    xTaskCreatePinnedToCore(threadSkeleton, THREAD_SDA_NAME, THREAD_STACK_SIZE, &components.threadParams_sensorDataAcquisition, THREAD_PRIORITY, &components.thread_sensorDataAcquisition, THREAD_SDA_CORE);
+    xTaskCreatePinnedToCore(threadSkeleton,
+                            THREAD_SDA_NAME,
+                            THREAD_STACK_SIZE,
+                            &components.threadParams_sensorDataAcquisition,
+                            THREAD_PRIORITY,
+                            &components.thread_sensorDataAcquisition,
+                            THREAD_SDA_CORE);
 
     runtime.task_sdd_serial.setFrequency(config.sdd_serial_frequency);
     runtime.task_sdd_display.setFrequency(config.sdd_display_frequency);
     runtime.task_sdd_websocket.setFrequency(config.sdd_websocket_frequency);
-    xTaskCreatePinnedToCore(threadSkeleton, THREAD_SDD_NAME, THREAD_STACK_SIZE, &components.threadParams_sensorDataDistribution, THREAD_PRIORITY, &components.thread_sensorDataDistribution, THREAD_SDD_CORE);
+    xTaskCreatePinnedToCore(threadSkeleton,
+                            THREAD_SDD_NAME,
+                            THREAD_STACK_SIZE,
+                            &components.threadParams_sensorDataDistribution,
+                            THREAD_PRIORITY,
+                            &components.thread_sensorDataDistribution,
+                            THREAD_SDD_CORE);
 }
 
 void hAIR_System::loop()
@@ -388,7 +398,7 @@ void hAIR_System::threadFunction_loop(Timestamp now)
 /// Init
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool hAIR_System::initDisplay()
+void hAIR_System::initDisplay()
 {
     components.tft.begin();
     components.tft.fillScreen(TFT_BLACK);
@@ -402,22 +412,15 @@ bool hAIR_System::initDisplay()
 
     components.tft.setTextColor(TFT_WHITE, TFT_BLACK);
 
-    return true; // Is there a way to detect whether the display was initialized correctly?
+    post.display = true; // Is there a way to detect whether the display was initialized correctly?
 }
 
-bool hAIR_System::initFilesystem(bool formatIfFailed)
+void hAIR_System::initFilesystem(bool formatIfFailed)
 {
-    if (!LITTLEFS.begin(formatIfFailed))
-    {
-        return false;
-    }
-
-    listDir(LITTLEFS, "/", 0);
-
-    return true;
+    post.filesystem = LITTLEFS.begin(formatIfFailed);
 }
 
-bool hAIR_System::loadConfigFromFileOrDefault(bool saveIfLoadFailed)
+void hAIR_System::loadConfigFromFileOrDefault(bool saveIfLoadFailed)
 {
     config = {};
 
@@ -432,24 +435,26 @@ bool hAIR_System::loadConfigFromFileOrDefault(bool saveIfLoadFailed)
         {
             config = tmp;
 
-            return true;
+            post.config = true;
+            return;
         }
     }
 
     if (saveIfLoadFailed)
     {
-        uint8_t jsonStr[512]{};
-        auto    size = Config::toJSON(config, jsonStr);
+        std::array<char, 512> jsonStr{};
+
+        const auto size = Config::toJSON<jsonStr.size()>(config, jsonStr.data());
 
         auto fileWrite = LITTLEFS.open(HAIR_CONFIG_FILE_NAME, "w");
-        fileWrite.write(jsonStr, size);
+        fileWrite.write(reinterpret_cast<uint8_t*>(jsonStr.data()), size);
         fileWrite.close();
     }
 
-    return false;
+    post.config = false;
 }
 
-bool hAIR_System::initWiFi(bool configWasLoaded)
+void hAIR_System::initWiFi(bool configWasLoaded)
 {
     WiFi.mode(WIFI_STA);
 
@@ -479,7 +484,8 @@ bool hAIR_System::initWiFi(bool configWasLoaded)
     {
         if (WiFi.status() == WL_CONNECTED)
         {
-            return true;
+            post.wifi = true;
+            return;
         }
         printAndDisplayPOSTprogress();
         delay(500);
@@ -488,24 +494,25 @@ bool hAIR_System::initWiFi(bool configWasLoaded)
     constexpr auto WIFI_RESTART_TIMEOUT_MS{5 * 60000}; // Set to 5 minutes, use 0 for no restart
     runtime.task_system_restartBecauseWiFiFailed.setDelayTime(WIFI_RESTART_TIMEOUT_MS);
     runtime.task_system_restartBecauseWiFiFailed.updateTry(millis());
-    return false;
+
+    post.wifi = false;
 }
 
-bool hAIR_System::initMDNS()
+void hAIR_System::initMDNS()
 {
-    return MDNS.begin(HAIR_WIFI_HOSTNAME);
+    post.mdns = MDNS.begin(HAIR_WIFI_HOSTNAME);
 }
 
-bool hAIR_System::initOTA()
+void hAIR_System::initOTA()
 {
     AsyncElegantOTA.begin(&components.asyncWebserver);
     ArduinoOTA.setHostname(HAIR_WIFI_HOSTNAME);
     ArduinoOTA.begin();
 
-    return true; // Is there a way to detect whether it was initialized correctly?
+    post.ota = true; // Is there a way to detect whether it was initialized correctly?
 }
 
-bool hAIR_System::initNTP()
+void hAIR_System::initNTP()
 {
     components.ntpclient.begin();
     components.ntpclient.setTimeOffset(7200); // UTC + 2
@@ -519,47 +526,51 @@ bool hAIR_System::initNTP()
         // Something like a timeout
         if (cnt++ > 10)
         {
-            return false;
+            post.ntpclient = false;
+            return;
         }
     }
 
-    return true;
+    post.ntpclient = true;
 }
 
-bool hAIR_System::initAsyncWebserver()
+void hAIR_System::initAsyncWebserver()
 {
     // we cannot use a port from the config file, since it would require reassigning the component member variable,
     // but that somehow led to infinite resets
     //components.webserver = AsyncWebServer(config.webserver_port);
     components.asyncWebserver.begin();
-    return true;
+    post.asyncWebserver = true;
 }
 
-bool hAIR_System::initLogger()
+void hAIR_System::initLogger()
 {
     plog::init(plog::Severity(config.logger_severity), &components.appender);
 
-    return true;
+    post.logger = true;
 }
 
-bool hAIR_System::initSGP()
+void hAIR_System::initSGP()
 {
-    auto success = components.sgp.begin();
+    post.sgp30 = components.sgp.begin();
 
-    // See Baseline acquisition in SDA
-    Preferences preferences;
-    preferences.begin("SGP30", true);
-    uint16_t TVOC_baseline = preferences.getUShort("TVOC_baseline", 0U);
-    uint16_t eCO2_baseline = preferences.getUShort("eCO2_baseline", 0U);
-    preferences.end();
-
-    // https://learn.adafruit.com/adafruit-sgp30-gas-tvoc-eco2-mox-sensor/arduino-code, should be around 400 if it was ever initialized
-    if (eCO2_baseline != 0)
+    if (post.sgp30)
     {
-        components.sgp.setIAQBaseline(eCO2_baseline, TVOC_baseline);
-    }
+        // See Baseline acquisition in SDA
+        Preferences preferences;
+        preferences.begin("SGP30", true);
+        uint16_t TVOC_baseline = preferences.getUShort("TVOC_baseline", 0U);
+        uint16_t eCO2_baseline = preferences.getUShort("eCO2_baseline", 0U);
+        preferences.end();
 
-    return success;
+        PLOGN << "TV " << TVOC_baseline << " CO " << eCO2_baseline;
+
+        // https://learn.adafruit.com/adafruit-sgp30-gas-tvoc-eco2-mox-sensor/arduino-code, should be around 400 if it was ever initialized
+        if (eCO2_baseline != 0)
+        {
+            post.sgp30_baseline = components.sgp.setIAQBaseline(eCO2_baseline, TVOC_baseline);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

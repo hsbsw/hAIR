@@ -230,7 +230,7 @@ public:
 
         float bme_measure_frequency{10};
 
-        float sdd_serial_frequency{1};
+        float sdd_serial_frequency{0};
         float sdd_display_frequency{5};
         float sdd_websocket_frequency{1};
 
@@ -268,10 +268,11 @@ public:
             return false;
         }
 
-        static size_t toJSON(Config config, uint8_t* jsonStr)
+        template<int N = 512>
+        static size_t toJSON(Config config, char* jsonStr)
         {
             // https://arduinojson.org/v6/doc/serialization/
-            StaticJsonDocument<512> doc;
+            StaticJsonDocument<N> doc;
 
             doc["wifi"]["ssid"]               = config.wifi_ssid;
             doc["wifi"]["password"]           = config.wifi_password;
@@ -284,10 +285,18 @@ public:
             doc["sdd"]["display_frequency"]   = config.sdd_display_frequency;
             doc["sdd"]["websocket_frequency"] = config.sdd_websocket_frequency;
 
-            uint8_t tmp[512]{}; // stupid type forwarding...
-            auto    size = serializeJsonPretty(doc, tmp);
-            memcpy(jsonStr, tmp, sizeof(tmp));
+            char tmp[N]{}; // stupid type forwarding...
+            auto size = serializeJsonPretty(doc, tmp);
+            memcpy(jsonStr, tmp, N);
             return size;
+        }
+
+        template<int N = 512>
+        static String toJSON(Config config)
+        {
+            std::array<char, N> jsonStr{};
+            toJSON<N>(config, jsonStr.data());
+            return String{jsonStr.data()};
         }
 
         ////////////////////////////////
@@ -387,6 +396,23 @@ public:
         TaskItem task_sdd_websocket{};
     };
 
+    struct POST
+    {
+        bool display;        /// true => success;   false => failed
+        bool filesystem;     /// true => mounted?;  false => created
+        bool config;         /// true => loaded;    false => default
+        bool wifi;           /// true => connected; false => failed
+        bool mdns;           /// true => success;   false => failed
+        bool ota;            /// true => success;   false => failed
+        bool ntpclient;      /// true => connected; false => failed
+        bool asyncWebserver; /// true => started;   false => failed
+        bool logger;         /// true => success;   false => failed
+
+        bool webserver;      /// true => success;   false => failed
+        bool sgp30;          /// true => success;   false => failed
+        bool sgp30_baseline; /// true => prefs set; false => failed
+    };
+
     void setup();
     void loop();
 
@@ -403,6 +429,7 @@ private:
     Components        components{};
     Runtime           runtime{};
     SensorDataStorage sensorData{};
+    POST              post{};
 
     ////////////////////////////////
     /// Thread Functions
@@ -417,18 +444,18 @@ private:
     ////////////////////////////////
 
     // Base
-    bool initDisplay();
-    bool initFilesystem(bool formatIfFailed);
-    bool loadConfigFromFileOrDefault(bool saveIfLoadFailed);
-    bool initWiFi(bool configWasLoaded);
-    bool initMDNS();
-    bool initOTA();
-    bool initNTP();
-    bool initAsyncWebserver();
-    bool initLogger();
+    void initDisplay();
+    void initFilesystem(bool formatIfFailed);
+    void loadConfigFromFileOrDefault(bool saveIfLoadFailed);
+    void initWiFi(bool configWasLoaded);
+    void initMDNS();
+    void initOTA();
+    void initNTP();
+    void initAsyncWebserver();
+    void initLogger();
 
     // Application
-    bool initSGP();
+    void initSGP();
 
     ////////////////////////////////
     // Post
