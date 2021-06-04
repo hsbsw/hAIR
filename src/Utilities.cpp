@@ -26,6 +26,10 @@
 
 #include "Utilities.h"
 
+////////////////////////////////
+/// Filesystem
+////////////////////////////////
+
 void listDir(fs::FS& fs, const char* dirname, uint8_t levels)
 {
     Serial.printf("Listing directory: %s\r\n", dirname);
@@ -81,6 +85,10 @@ void listDir(fs::FS& fs, const char* dirname, uint8_t levels)
         file = root.openNextFile();
     }
 }
+
+////////////////////////////////
+/// Date & Time
+////////////////////////////////
 
 #ifndef LEAP_YEAR
 #define LEAP_YEAR(Y) ((Y > 0) && !(Y % 4) && ((Y % 100) || !(Y % 400)))

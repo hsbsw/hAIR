@@ -29,18 +29,13 @@
 #include <Arduino.h>
 #include <Fs.h>
 #include <mutex>
+#include <type_traits>
 
-template<typename T>
-inline bool isBetween(T val, T min, T max)
-{
-    return (min < val) && (val < max);
-}
+////////////////////////////////
+/// Misc
+////////////////////////////////
 
-template<typename T>
-inline bool isWithin(T val, T min, T max)
-{
-    return (min <= val) && (val <= max);
-}
+#define UNUSED(x) static_cast<void>(x)
 
 class AutoLock
 {
@@ -59,7 +54,23 @@ private:
     std::mutex& m_mtx;
 };
 
+////////////////////////////////
+/// Timing
+////////////////////////////////
+
 using Timestamp = int32_t;
+
+template<typename T>
+inline bool isBetween(T val, T min, T max)
+{
+    return (min < val) && (val < max);
+}
+
+template<typename T>
+inline bool isWithin(T val, T min, T max)
+{
+    return (min <= val) && (val <= max);
+}
 
 inline bool dt_max(Timestamp now, Timestamp last, Timestamp max)
 {
@@ -123,11 +134,22 @@ private:
     float   m_frequency{};
 };
 
+////////////////////////////////
+/// Filesystem
+////////////////////////////////
+
 void listDir(fs::FS& fs, const char* dirname, uint8_t levels);
+
+////////////////////////////////
+/// Date & Time
+////////////////////////////////
 
 String getFormattedTime(unsigned long secs);
 String getFormattedDate(unsigned long secs);
 
+////////////////////////////////
+/// Enums
+////////////////////////////////
 
 // http://blog.bitwigglers.org/using-enum-classes-as-type-safe-bitmasks/
 // https://gist.github.com/derofim/0188769131c62c8aff5e1da5740b3574
